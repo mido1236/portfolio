@@ -6,7 +6,7 @@ I'm passionate about **game development** and hope to some day work on actual ga
 
 ## 🚀 Featured Projects
 
-🔹 **[Thread Pool Executor](https://github.com/YourGitHubUsername/ThreadPoolExecutor)**  
+🔹 **[Thread Pool Executor](https://github.com/mido1236/portfolio/tree/main/Projects/ThreadPoolExecutor)**  
 _A lightweight, multithreaded task executor in C++._
 
 ## 📫 Connect with Me!
