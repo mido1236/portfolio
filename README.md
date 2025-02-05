@@ -10,6 +10,6 @@ I'm passionate about **game development** and hope to some day work on actual ga
 _A lightweight, multithreaded task executor in C++._
 
 ## 📫 Connect with Me!
-- 💼 [LinkedIn]([https://www.linkedin.com/in/YourProfile](https://www.linkedin.com/in/ahmedmezzat/))
+- 💼 [LinkedIn](https://www.linkedin.com/in/ahmedmezzat/)
 - 🌐 [Portfolio Website](https://YourWebsite.com)
 - 📧 Email: mido1236@gmail.com
