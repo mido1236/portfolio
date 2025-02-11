@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories("C:/opencv/build/include")
 
 # OpenCV Library Directories
-#link_directories("C:/opencv/build/x64/vc16/lib")
 link_directories("C:/opencv/build/lib/Release")
 
 # Define the Executable
@@ -19,9 +18,4 @@ target_link_libraries(ObjectTracker
         opencv_imgproc4100
         opencv_highgui4100
         opencv_videoio4100
-)
-
-# Add DLL Directory for Runtime
-set_target_properties(ObjectTracker PROPERTIES
-        VS_DEBUGGER_ENVIRONMENT "PATH=C:\\opencv\\build\\bin\\release\\;%PATH%"
 )

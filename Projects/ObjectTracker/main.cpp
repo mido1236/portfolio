@@ -4,6 +4,13 @@
 using namespace cv;
 using namespace std;
 
+/**
+ * Simple object tracker based on OpenCV. Be sure to include the DLL files at runtime
+ * if you're using the Visual Studio based approach
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char **argv) {
     VideoCapture cap(argc > 1 ? stoi(argv[1]) : 0); // Open default webcam
     if (!cap.isOpened()) {
