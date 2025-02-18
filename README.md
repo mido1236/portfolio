@@ -9,6 +9,9 @@ I'm passionate about **game development** and hope to some day work on actual ga
 🔹 **[Thread Pool Executor](https://github.com/mido1236/portfolio/tree/main/Projects/ThreadPoolExecutor)**  
 _A lightweight, multithreaded task executor in C++._
 
+🔹 **[Huffman Tree Image Compression](https://github.com/mido1236/portfolio/tree/master/Projects/HuffmanImageCompressor)()**  
+_A C++ program using huffman tree to compress/decompress PPM images._
+
 ## 📫 Connect with Me!
 - 💼 [LinkedIn](https://www.linkedin.com/in/ahmedmezzat/)
 - 📧 Email: mido1236@gmail.com
