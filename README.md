@@ -12,6 +12,9 @@ _A lightweight, multithreaded task executor in C++._
 🔹 **[Huffman Tree Image Compression](https://github.com/mido1236/portfolio/tree/master/Projects/HuffmanImageCompressor)**  
 _A C++ program using huffman tree to compress/decompress PPM images._
 
+🔹 **[JPEG style Huffman Tree Image Compression](https://github.com/mido1236/portfolio/tree/master/Projects/JPEGHuffmanImageCompressor)**  
+_A C++ program using huffman tree, discrete cosine transform, and quantization to compress/decompress PPM images._
+
 ## 📫 Connect with Me!
 - 💼 [LinkedIn](https://www.linkedin.com/in/ahmedmezzat/)
 - 📧 Email: mido1236@gmail.com
