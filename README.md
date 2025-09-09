@@ -18,6 +18,9 @@ _A C++ program using huffman tree, discrete cosine transform, and quantization t
 🔹 **[SDL Starter Project](https://github.com/mido1236/portfolio/tree/master/Projects/SDLStarter)**  
 _A simple SDL project where the player avoids falling objects._
 
+🔹 **[Entity Component System (WIP)](https://github.com/mido1236/portfolio/tree/master/ECS)**  
+_An Entity Component System for a simple vertical shooter game._
+
 ## 📫 Connect with Me!
 - 💼 [LinkedIn](https://www.linkedin.com/in/ahmedmezzat/)
 - 📧 Email: mido1236@gmail.com
