@@ -3,6 +3,7 @@
 
 #include "ai.h"
 #include "attack_system.h"
+#include "cleanup.h"
 #include "collision.h"
 #include "components.h"
 #include "ecs.h"
@@ -16,7 +17,12 @@
 
 using namespace std;
 
+const int WIDTH = 20;
+const int HEIGHT = 20;
+
 int main() {
+    Game::setupSignalHandlers();
+
     enableANSI();
     std::cout << "\033[2J\033[H";
 
@@ -33,10 +39,14 @@ int main() {
     const Entity e2 = ecs.createEntity();
     ecs.addComponent(e2, Position{10.0f, 5.0f});
 
-    const Entity spawner = ecs.createEntity();
-    ecs.addComponent<Spawner>(spawner, {120, 60});
+    const Entity spawnerEntity = ecs.createEntity();
+    Spawner sp{60, 60, 3};
+    sp.types.push_back({'E', 1.0f, 5}); // slow, tanky enemy
+    sp.types.push_back({'F', 2.5f, 2}); // fast, fragile enemy
+    ecs.addComponent<Spawner>(spawnerEntity, sp);
 
     int frame = 0;
+    auto lastTime = chrono::steady_clock::now();
     while (true) {
         if (collisionSystem(ecs)) break;
 
@@ -44,25 +54,31 @@ int main() {
 
         clearScreen();
         Input input = inputSystem();
-        spawnerSystem(ecs, spawner);
+        spawnerSystem(ecs, spawnerEntity, WIDTH);
         projectileSystem(ecs, 1);
         playerMovementSystem(ecs, input);
         attackSystem(ecs, frame, input);
         aiSystem(ecs);
-        moveSystem(ecs, 1);
-        cout << "Frame " << frame << endl;
-        renderSystem(ecs, 20, 20);
+
+        auto now = std::chrono::steady_clock::now();
+        auto elapsed = now - lastTime;
+        lastTime = now;
+        chrono::duration<float> seconds(elapsed);
+
+        moveSystem(ecs, seconds.count());
+        cout << "Frame " << frame << "              " << endl;
+        renderSystem(ecs, WIDTH, HEIGHT);
 
         frame++;
 
         auto frameEnd = std::chrono::steady_clock::now();
-        auto elapsed = frameEnd - frameStart;
+        elapsed = frameEnd - frameStart;
 
         if (elapsed < frameDuration) {
             std::this_thread::sleep_for(frameDuration - elapsed);
         }
     }
 
-
+    Game::shutdown();
     return 0;
 }

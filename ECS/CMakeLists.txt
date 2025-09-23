@@ -16,4 +16,6 @@ add_executable(ECS main.cpp
         Input.h
         player_movement.h
         projectile_system.h
-        spawner_system.h)
+        spawner_system.h
+        cleanup.h
+        custom_random.h)

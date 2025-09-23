@@ -8,6 +8,8 @@
 using namespace std;
 
 char glyphForEntity(ECS &ecs, const Entity &e) {
+    auto *renderable = ecs.getComponent<Renderable>(e);
+    if (renderable != nullptr) return renderable->glyph;
     if (ecs.getComponent<Player>(e)) return '@';
     if (ecs.getComponent<AI>(e)) return 'E';
     if (ecs.getComponent<Projectile>(e)) return '*';

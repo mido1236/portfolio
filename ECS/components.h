@@ -46,9 +46,4 @@ struct Projectile {
     int lifetime; // how many frames it lasts
 };
 
-struct Spawner {
-    int interval;
-    int timer;
-};
-
 #endif //ECS_COMPONENTS_H

@@ -10,7 +10,7 @@ void enableANSI();
 
 void renderSystem(ECS &ecs, int width, int height);
 
-const int FPS = 60;
+constexpr int FPS = 60;
 const std::chrono::milliseconds frameDuration(1000 / FPS);
 
 #endif //RENDERABLE_H

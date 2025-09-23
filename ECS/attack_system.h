@@ -21,7 +21,7 @@ inline void attackSystem(ECS &ecs, const int frame, Input &input) {
             auto projectile = ecs.createEntity();
             ecs.addComponent<Projectile>(projectile, {atk->damage, 10});
             ecs.addComponent<Position>(projectile, {pos->x, pos->y});
-            ecs.addComponent<Velocity>(projectile, {0, -1});
+            ecs.addComponent<Velocity>(projectile, {0, -30});
             ecs.addComponent<Renderable>(projectile, {'*'});
         }
     }
