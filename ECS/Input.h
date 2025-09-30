@@ -8,6 +8,7 @@
 struct Input {
     bool up = false, down = false, left = false, right = false;
     bool attack = false;
+    bool quit = false;
 };
 
 #endif //ECS_INPUT_H

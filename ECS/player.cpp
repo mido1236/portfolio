@@ -1,3 +1,4 @@
+#include <SDL3/SDL.h>
 #include <conio.h>
 #include <windows.h>
 
@@ -10,11 +11,21 @@ bool isKeyDown(const int vk) {
 Input inputSystem() {
     Input input;
 
-    input.up = (GetAsyncKeyState('W') & 0x8000) != 0;
-    input.down = (GetAsyncKeyState('S') & 0x8000) != 0;
-    input.left = (GetAsyncKeyState('A') & 0x8000) != 0;
-    input.right = (GetAsyncKeyState('D') & 0x8000) != 0;
-    input.attack = (GetAsyncKeyState(' ') & 0x8000) != 0;
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT) input.quit = true;
+        if (event.type == SDL_EVENT_KEY_DOWN) {
+            if (event.key.key == SDLK_ESCAPE) input.quit = true;
+        }
+    }
+
+    const bool *state = SDL_GetKeyboardState(nullptr);
+    // WASD movement
+    if (state[SDL_SCANCODE_W]) input.up = true;
+    if (state[SDL_SCANCODE_S]) input.down = true;
+    if (state[SDL_SCANCODE_A]) input.left = true;
+    if (state[SDL_SCANCODE_D]) input.right = true;
+    if (state[SDL_SCANCODE_SPACE]) input.attack = true;
 
     return input;
 }

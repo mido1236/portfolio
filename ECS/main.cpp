@@ -1,3 +1,4 @@
+#include <SDL3/SDL.h>
 #include <iostream>
 #include <thread>
 
@@ -23,8 +24,14 @@ const int HEIGHT = 20;
 int main() {
     Game::setupSignalHandlers();
 
-    enableANSI();
-    std::cout << "\033[2J\033[H";
+    // SDL init
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_Log("SDL_Init failed: %s", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Window *window = SDL_CreateWindow("ECS SDL Demo", 800, 600, SDL_WINDOW_RESIZABLE);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, nullptr);
 
     ECS ecs;
 
@@ -33,6 +40,7 @@ int main() {
     ecs.addComponent(e1, Position{2.0f, 5.0f});
     ecs.addComponent(e1, Velocity{0.0f, 0.0f});
     ecs.addComponent(e1, Player{});
+    ecs.addComponent(e1, Renderable{'@'});
     ecs.addComponent(e1, Attack{10});
     ecs.addComponent(e1, Health{50, 50});
 
@@ -52,8 +60,9 @@ int main() {
 
         auto frameStart = std::chrono::steady_clock::now();
 
-        clearScreen();
+        // clearScreen();
         Input input = inputSystem();
+        if (input.quit) break;
         spawnerSystem(ecs, spawnerEntity, WIDTH);
         projectileSystem(ecs, 1);
         playerMovementSystem(ecs, input);
@@ -66,19 +75,16 @@ int main() {
         chrono::duration<float> seconds(elapsed);
 
         moveSystem(ecs, seconds.count());
-        cout << "Frame " << frame << "              " << endl;
-        renderSystem(ecs, WIDTH, HEIGHT);
+        renderSystem(renderer, ecs);
 
         frame++;
 
-        auto frameEnd = std::chrono::steady_clock::now();
-        elapsed = frameEnd - frameStart;
-
-        if (elapsed < frameDuration) {
-            std::this_thread::sleep_for(frameDuration - elapsed);
-        }
+        SDL_Delay(16);
     }
 
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     Game::shutdown();
     return 0;
 }

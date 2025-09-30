@@ -8,7 +8,7 @@ void clearScreen();
 
 void enableANSI();
 
-void renderSystem(ECS &ecs, int width, int height);
+void renderSystem(SDL_Renderer* renderer, ECS& ecs);
 
 constexpr int FPS = 60;
 const std::chrono::milliseconds frameDuration(1000 / FPS);

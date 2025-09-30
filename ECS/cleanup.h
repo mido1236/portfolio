@@ -12,12 +12,12 @@
 namespace Game {
     inline void cleanupConsole() {
         // Clear + reset cursor
-        std::cout << "\033[2J\033[H";
-        std::cout << "\033[?25h"; // make sure cursor visible again
+        // std::cout << "\033[2J\033[H";
+        // std::cout << "\033[?25h"; // make sure cursor visible again
         std::cout.flush();
 
         // Flush stray keystrokes
-        while (_kbhit()) _getch();
+        // while (_kbhit()) _getch();
     }
 
     inline void shutdown() {
