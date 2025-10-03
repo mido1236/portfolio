@@ -13,18 +13,22 @@ inline void projectileSystem(ECS &ecs, const int dt) {
     for (auto &p: ecs.queryEntities<Projectile, Position, Velocity>()) {
         const auto *pos = ecs.getComponent<Position>(p);
         auto *proj = ecs.getComponent<Projectile>(p);
+        auto *projSprite = ecs.getComponent<Sprite>(p);
 
         for (auto &enemy: ecs.queryEntities<Enemy, Position, Health>()) {
             const auto *epos = ecs.getComponent<Position>(enemy);
             const auto health = ecs.getComponent<Health>(enemy);
+            auto *enemySprite = ecs.getComponent<Sprite>(enemy);
 
             const float dx = epos->x - pos->x;
             const float dy = epos->y - pos->y;
 
-            if (dx * dx + dy * dy < 1.0f) {
+            if (SDL_HasRectIntersectionFloat(&projSprite->dstRect, &enemySprite->dstRect)) {
                 health->current -= proj->damage;
                 if (health->current <= 0) toDestroy.push_back(enemy);
             }
+            // if (dx * dx + dy * dy < 10.0f) {}
+            // cout << dx * dx + dy * dy << " ";
         }
 
         if ((proj->lifetime -= dt) <= 0) {

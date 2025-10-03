@@ -4,8 +4,6 @@
 
 #include "ecs.h"
 
-void clearScreen();
-
 void enableANSI();
 
 void renderSystem(SDL_Renderer* renderer, ECS& ecs);

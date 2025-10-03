@@ -12,10 +12,10 @@ inline void playerMovementSystem(ECS &ecs, const Input &input) {
         auto *vel = ecs.ensureComponent<Velocity>(e, {0, 0});
 
         vel->dy = vel->dx = 0;
-        if (input.up) vel->dy = -10;
-        if (input.down) vel->dy = 10;
-        if (input.left) vel->dx = -10;
-        if (input.right) vel->dx = 10;
+        if (input.up) vel->dy = -100;
+        if (input.down) vel->dy = 100;
+        if (input.left) vel->dx = -100;
+        if (input.right) vel->dx = 100;
     }
 }
 

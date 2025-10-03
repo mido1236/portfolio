@@ -36,6 +36,7 @@ struct Renderable {
 };
 
 struct Attack {
+    SDL_Texture *texture;
     int damage;
     int cooldown;
     int lastAttackTime;
@@ -44,6 +45,12 @@ struct Attack {
 struct Projectile {
     int damage;
     int lifetime; // how many frames it lasts
+};
+
+struct Sprite {
+    SDL_Texture *texture;
+    SDL_FRect srcRect;
+    SDL_FRect dstRect;
 };
 
 #endif //ECS_COMPONENTS_H

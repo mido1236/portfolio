@@ -25,7 +25,6 @@ inline bool collisionSystem(ECS &ecs) {
 
         if (checkCollision(*playerPos, *aiPos)) {
             playerHealth->current--;
-            // cout << "Player attacked" << endl;
             if (playerHealth->current <= 0) {
                 cout << "DEAD" << endl;
                 return true;

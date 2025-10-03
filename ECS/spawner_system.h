@@ -13,6 +13,7 @@ struct EnemyType {
     char glyph; // how it looks
     float maxSpeed; // movement speed
     int health; // starting health
+    Sprite sprite;
 };
 
 struct Spawner {
@@ -33,13 +34,14 @@ inline void spawnerSystem(ECS &ecs, const Entity &se, const int width) {
 
     for (int i = 0; i < spawner->enemiesPerWave; i++) {
         int rand_int = randInt(0, static_cast<int>(spawner->types.size()) - 1);
-        auto [glyph, maxSpeed, health] = spawner->types[rand_int];
+        auto [glyph, maxSpeed, health, sprite] = spawner->types[rand_int];
         ecs.addComponent<Enemy>(entity, {});
         ecs.addComponent<Position>(entity, {static_cast<float>(randInt(0, width)), 0});
         ecs.addComponent<Velocity>(entity, {0, 0});
         ecs.addComponent<Renderable>(entity, {glyph});
         ecs.addComponent<Health>(entity, {health, health});
         ecs.addComponent<AI>(entity, {0, 0, maxSpeed});
+        ecs.addComponent(entity, sprite);
     }
 }
 #endif //ECS_SPAWNER_SYSTEM_H

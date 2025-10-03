@@ -19,10 +19,11 @@ inline void attackSystem(ECS &ecs, const int frame, Input &input) {
             atk->lastAttackTime = frame;
 
             auto projectile = ecs.createEntity();
-            ecs.addComponent<Projectile>(projectile, {atk->damage, 10});
+            ecs.addComponent<Projectile>(projectile, {atk->damage, 30});
             ecs.addComponent<Position>(projectile, {pos->x, pos->y});
-            ecs.addComponent<Velocity>(projectile, {0, -30});
+            ecs.addComponent<Velocity>(projectile, {0, -300});
             ecs.addComponent<Renderable>(projectile, {'*'});
+            ecs.addComponent<Sprite>(projectile, {atk->texture, {944, 0, 245, 450}, {0, 0, 32, 32}});
         }
     }
 }
