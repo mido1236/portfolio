@@ -9,21 +9,23 @@
 #include "ecs.h"
 #include "Input.h"
 
-inline void attackSystem(ECS &ecs, const int frame, Input &input) {
+inline void attackSystem(ECS &ecs, const float dt, Input &input) {
     for (const auto &e: ecs.queryEntities<Player, Attack, Position>()) {
         if (input.attack) {
             auto *atk = ecs.getComponent<Attack>(e);
             const auto *pos = ecs.getComponent<Position>(e);
 
-            if (frame - atk->lastAttackTime < atk->cooldown) continue;
-            atk->lastAttackTime = frame;
+            atk->cooldown -= dt;
 
+            if (atk->cooldown > 0) return;
+
+            atk->cooldown = atk->fireRate;
             auto projectile = ecs.createEntity();
             ecs.addComponent<Projectile>(projectile, {atk->damage, 30});
-            ecs.addComponent<Position>(projectile, {pos->x, pos->y});
+            ecs.addComponent<Position>(projectile, {pos->x + 8, pos->y});
             ecs.addComponent<Velocity>(projectile, {0, -300});
             ecs.addComponent<Renderable>(projectile, {'*'});
-            ecs.addComponent<Sprite>(projectile, {atk->texture, {944, 0, 245, 450}, {0, 0, 32, 32}});
+            ecs.addComponent<Sprite>(projectile, {atk->texture, {944, 0, 245, 450}, {0, 0, 16, 16}});
         }
     }
 }

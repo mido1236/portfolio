@@ -30,9 +30,9 @@ inline void spawnerSystem(ECS &ecs, const Entity &se, const int width) {
     if (--spawner->timer > 0) return;
 
     spawner->timer = spawner->interval;
-    const Entity entity = ecs.createEntity();
 
     for (int i = 0; i < spawner->enemiesPerWave; i++) {
+        const Entity entity = ecs.createEntity();
         int rand_int = randInt(0, static_cast<int>(spawner->types.size()) - 1);
         auto [glyph, maxSpeed, health, sprite] = spawner->types[rand_int];
         ecs.addComponent<Enemy>(entity, {});

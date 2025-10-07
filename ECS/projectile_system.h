@@ -20,15 +20,10 @@ inline void projectileSystem(ECS &ecs, const int dt) {
             const auto health = ecs.getComponent<Health>(enemy);
             auto *enemySprite = ecs.getComponent<Sprite>(enemy);
 
-            const float dx = epos->x - pos->x;
-            const float dy = epos->y - pos->y;
-
             if (SDL_HasRectIntersectionFloat(&projSprite->dstRect, &enemySprite->dstRect)) {
                 health->current -= proj->damage;
                 if (health->current <= 0) toDestroy.push_back(enemy);
             }
-            // if (dx * dx + dy * dy < 10.0f) {}
-            // cout << dx * dx + dy * dy << " ";
         }
 
         if ((proj->lifetime -= dt) <= 0) {

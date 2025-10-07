@@ -19,8 +19,8 @@
 
 using namespace std;
 
-const int WIDTH = 20;
-const int HEIGHT = 20;
+const int WIDTH = 200;
+const int HEIGHT = 200;
 
 int main() {
     Game::setupSignalHandlers();
@@ -51,7 +51,7 @@ int main() {
     ecs.addComponent(e1, Velocity{0.0f, 0.0f});
     ecs.addComponent(e1, Player{});
     ecs.addComponent(e1, Renderable{'@'});
-    ecs.addComponent(e1, Attack{spritesTex, 10});
+    ecs.addComponent(e1, Attack{spritesTex, 10, 0.15f, 0});
     ecs.addComponent(e1, Health{50, 50});
     ecs.addComponent(e1, Sprite{spritesTex, {0, 0, 350, 450}, {0, 0, 32, 32}});
 
@@ -59,7 +59,7 @@ int main() {
     ecs.addComponent(e2, Position{10.0f, 5.0f});
 
     const Entity spawnerEntity = ecs.createEntity();
-    Spawner sp{60, 60, 3};
+    Spawner sp{60, 20, 3};
     sp.types.push_back({'E', 20.0f, 5, Sprite{spritesTex, {445, 0, 360, 450}, {0, 0, 32, 32}}}); // slow, tanky enemy
     sp.types.push_back({'F', 50.0f, 2, Sprite{spritesTex, {445, 0, 360, 450}, {0, 0, 32, 32}}}); // fast, fragile enemy
     ecs.addComponent<Spawner>(spawnerEntity, sp);
@@ -69,19 +69,18 @@ int main() {
     while (true) {
         if (collisionSystem(ecs)) break;
 
-        Input input = inputSystem();
-        if (input.quit) break;
-        spawnerSystem(ecs, spawnerEntity, WIDTH);
-        projectileSystem(ecs, 1);
-        playerMovementSystem(ecs, input);
-        attackSystem(ecs, frame, input);
-        aiSystem(ecs);
-
         auto now = std::chrono::steady_clock::now();
         auto elapsed = now - lastTime;
         lastTime = now;
         chrono::duration<float> seconds(elapsed);
 
+        Input input = inputSystem();
+        if (input.quit) break;
+        spawnerSystem(ecs, spawnerEntity, WIDTH);
+        projectileSystem(ecs, 1);
+        playerMovementSystem(ecs, input);
+        attackSystem(ecs, seconds.count(), input);
+        aiSystem(ecs);
         moveSystem(ecs, seconds.count());
         renderSystem(renderer, ecs);
 

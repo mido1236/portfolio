@@ -38,8 +38,8 @@ struct Renderable {
 struct Attack {
     SDL_Texture *texture;
     int damage;
-    int cooldown;
-    int lastAttackTime;
+    float fireRate;
+    float cooldown;
 };
 
 struct Projectile {
