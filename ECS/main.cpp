@@ -16,6 +16,7 @@
 #include "projectile_system.h"
 #include "render_system.h"
 #include "spawner_system.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 using namespace std;
 
@@ -36,6 +37,16 @@ int main() {
     //     return 1;
     // }
 
+    if (!TTF_Init()) {
+        SDL_Log("Failed to initialize SDL_ttf: %s", SDL_GetError());
+        return 1;
+    }
+
+    TTF_Font *font = TTF_OpenFont("assets/PressStart2P.ttf", 16);
+    if (!font) {
+        SDL_Log("Failed to load font: %s", SDL_GetError());
+        return 1;
+    }
 
     SDL_Window *window = SDL_CreateWindow("ECS SDL Demo", 800, 600, SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, nullptr);
@@ -46,14 +57,15 @@ int main() {
     ECS ecs;
 
     // Create entities
-    const Entity e1 = ecs.createEntity();
-    ecs.addComponent(e1, Position{2.0f, 5.0f});
-    ecs.addComponent(e1, Velocity{0.0f, 0.0f});
-    ecs.addComponent(e1, Player{});
-    ecs.addComponent(e1, Renderable{'@'});
-    ecs.addComponent(e1, Attack{spritesTex, 10, 0.15f, 0});
-    ecs.addComponent(e1, Health{50, 50});
-    ecs.addComponent(e1, Sprite{spritesTex, {0, 0, 350, 450}, {0, 0, 32, 32}});
+    const Entity playerEntity = ecs.createEntity();
+    ecs.addComponent(playerEntity, Position{20.0f, 50.0f});
+    ecs.addComponent(playerEntity, Velocity{0.0f, 0.0f});
+    ecs.addComponent(playerEntity, Player{});
+    ecs.addComponent(playerEntity, Renderable{'@'});
+    ecs.addComponent(playerEntity, Attack{spritesTex, 10, 0.15f, 0});
+    ecs.addComponent(playerEntity, Health{50, 50});
+    ecs.addComponent(playerEntity, Score{0});
+    ecs.addComponent(playerEntity, Sprite{spritesTex, {0, 0, 350, 450}, {0, 0, 32, 32}});
 
     const Entity e2 = ecs.createEntity();
     ecs.addComponent(e2, Position{10.0f, 5.0f});
@@ -82,7 +94,9 @@ int main() {
         attackSystem(ecs, seconds.count(), input);
         aiSystem(ecs);
         moveSystem(ecs, seconds.count());
-        renderSystem(renderer, ecs);
+        auto health = ecs.getComponent<Health>(playerEntity);
+        auto score = ecs.getComponent<Score>(playerEntity);
+        renderSystem(renderer, ecs, font, score->current, health->current);
 
         frame++;
 

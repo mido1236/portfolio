@@ -9,6 +9,9 @@ inline void moveSystem(ECS &ecs, const float dt) {
 
         pos->x += vel->dx * dt;
         pos->y += vel->dy * dt;
+
+        pos->x = max(0.0f, pos->x);
+        pos->y = max(0.0f, pos->y);
     }
 }
 #endif //ECS_MOVEMENT_H

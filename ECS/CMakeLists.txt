@@ -6,9 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 # If SDL3 is not in a standard path
 set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/third_party/SDL3" ${CMAKE_PREFIX_PATH})
 set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/third_party/SDL3_Image" ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/third_party/SDL3_ttf" ${CMAKE_PREFIX_PATH})
 include_directories(${SDL3_INCLUDE_DIRS})
 find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
 find_package(SDL3_image CONFIG REQUIRED COMPONENTS SDL3_image-shared)
+find_package(SDL3_ttf CONFIG REQUIRED COMPONENTS SDL3_ttf-shared)
 
 add_executable(ECS main.cpp
         components.h
@@ -26,9 +28,10 @@ add_executable(ECS main.cpp
         spawner_system.h
         cleanup.h
         custom_random.h
-        image.h)
+        image.h
+)
 
-target_link_libraries(ECS PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(ECS PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)
 
 add_custom_command(TARGET ECS POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -38,6 +41,11 @@ add_custom_command(TARGET ECS POST_BUILD
 add_custom_command(TARGET ECS POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${PROJECT_SOURCE_DIR}/third_party/SDL3_Image/bin/SDL3_image.dll"
+        $<TARGET_FILE_DIR:ECS>)
+
+add_custom_command(TARGET ECS POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/third_party/SDL3_ttf/bin/SDL3_ttf.dll"
         $<TARGET_FILE_DIR:ECS>)
 
 add_custom_command(TARGET ECS POST_BUILD

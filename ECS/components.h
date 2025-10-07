@@ -13,6 +13,10 @@ struct Health {
     int max;
 };
 
+struct Score {
+    int current;
+};
+
 struct Position {
     float x, y;
 };
