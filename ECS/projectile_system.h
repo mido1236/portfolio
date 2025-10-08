@@ -7,32 +7,27 @@
 #include "components.h"
 #include "ecs.h"
 
-inline void projectileSystem(ECS &ecs, const int dt) {
-    vector<Entity> toDestroy;
-
+inline void projectileSystem(ECS &ecs, const int dt, vector<Entity> &toDestroy, vector<Event> &events) {
     for (auto &p: ecs.queryEntities<Projectile, Position, Velocity>()) {
-        const auto *pos = ecs.getComponent<Position>(p);
         auto *proj = ecs.getComponent<Projectile>(p);
-        auto *projSprite = ecs.getComponent<Sprite>(p);
+        const auto *projSprite = ecs.getComponent<Sprite>(p);
 
         for (auto &enemy: ecs.queryEntities<Enemy, Position, Health>()) {
-            const auto *epos = ecs.getComponent<Position>(enemy);
             const auto health = ecs.getComponent<Health>(enemy);
-            auto *enemySprite = ecs.getComponent<Sprite>(enemy);
+            const auto *enemySprite = ecs.getComponent<Sprite>(enemy);
 
             if (SDL_HasRectIntersectionFloat(&projSprite->dstRect, &enemySprite->dstRect)) {
                 health->current -= proj->damage;
-                if (health->current <= 0) toDestroy.push_back(enemy);
+                if (health->current <= 0) {
+                    events.push_back(Event({EnemyDestroyed, proj->player, enemy}));
+                    toDestroy.push_back(enemy);
+                }
             }
         }
 
         if ((proj->lifetime -= dt) <= 0) {
             toDestroy.push_back(p);
         }
-    }
-
-    for (const auto &e: toDestroy) {
-        ecs.destroyEntity(e);
     }
 }
 

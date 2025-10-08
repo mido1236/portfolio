@@ -2,6 +2,8 @@
 #define ECS_COMPONENTS_H
 #include <bitset>
 
+#include "entity.h"
+
 constexpr size_t MAX_COMPONENTS = 64;
 using Signature = std::bitset<MAX_COMPONENTS>;
 
@@ -49,6 +51,7 @@ struct Attack {
 struct Projectile {
     int damage;
     int lifetime; // how many frames it lasts
+    Entity player;
 };
 
 struct Sprite {

@@ -3,14 +3,25 @@ project(ECS)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# If SDL3 is not in a standard path
-set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/third_party/SDL3" ${CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/third_party/SDL3_Image" ${CMAKE_PREFIX_PATH})
-set(CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/third_party/SDL3_ttf" ${CMAKE_PREFIX_PATH})
-include_directories(${SDL3_INCLUDE_DIRS})
-find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
-find_package(SDL3_image CONFIG REQUIRED COMPONENTS SDL3_image-shared)
-find_package(SDL3_ttf CONFIG REQUIRED COMPONENTS SDL3_ttf-shared)
+include(cmake/CPM.cmake)
+
+set(ARCH_SUBDIR "x86_64-w64-mingw32")
+if (MSVC)
+    set(ARCH_SUBDIR "")
+endif ()
+
+function(fetch_sdl3 pkg version)
+    CPMAddPackage(
+            NAME SDL3${pkg}
+            URL "https://github.com/libsdl-org/SDL${pkg}/releases/download/release-${version}/SDL3${pkg}-devel-${version}-mingw.zip"
+            DOWNLOAD_ONLY YES
+    )
+    set(SDL3${pkg}_DIR ${SDL3${pkg}_SOURCE_DIR}/${ARCH_SUBDIR} PARENT_SCOPE)
+endfunction()
+
+fetch_sdl3("" 3.2.24)
+fetch_sdl3(_ttf 3.2.2)
+fetch_sdl3(_image 3.2.4)
 
 add_executable(ECS main.cpp
         components.h
@@ -29,28 +40,36 @@ add_executable(ECS main.cpp
         cleanup.h
         custom_random.h
         image.h
+        destruction_system.h
+        event_system.h
 )
 
-target_link_libraries(ECS PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)
+list(PREPEND CMAKE_PREFIX_PATH "${SDL3_DIR}" "${SDL3_image_DIR}" "${SDL3_ttf_DIR}")
 
 add_custom_command(TARGET ECS POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_SOURCE_DIR}/third_party/SDL3/bin/SDL3.dll"
+        "${SDL3_DIR}/bin/SDL3.dll"
         $<TARGET_FILE_DIR:ECS>)
 
 add_custom_command(TARGET ECS POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_SOURCE_DIR}/third_party/SDL3_Image/bin/SDL3_image.dll"
+        "${SDL3_image_DIR}/bin/SDL3_image.dll"
         $<TARGET_FILE_DIR:ECS>)
 
 add_custom_command(TARGET ECS POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_SOURCE_DIR}/third_party/SDL3_ttf/bin/SDL3_ttf.dll"
+        "${SDL3_ttf_DIR}/bin/SDL3_ttf.dll"
         $<TARGET_FILE_DIR:ECS>)
 
 add_custom_command(TARGET ECS POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/assets"
         $<TARGET_FILE_DIR:ECS>/assets)
+
+find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
+find_package(SDL3_image CONFIG REQUIRED COMPONENTS SDL3_image-shared)
+find_package(SDL3_ttf CONFIG REQUIRED COMPONENTS SDL3_ttf-shared)
+
+target_link_libraries(ECS PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)
 
 set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")

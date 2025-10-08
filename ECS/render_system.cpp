@@ -10,7 +10,7 @@ using namespace std;
 constexpr int CELL_SIZE = 20; // each entity = 20x20 pixels
 
 char glyphForEntity(ECS &ecs, const Entity &e) {
-    auto *renderable = ecs.getComponent<Renderable>(e);
+    const auto *renderable = ecs.getComponent<Renderable>(e);
     if (renderable != nullptr) return renderable->glyph;
     if (ecs.getComponent<Player>(e)) return '@';
     if (ecs.getComponent<AI>(e)) return 'E';
@@ -29,13 +29,13 @@ inline SDL_Texture *renderText(SDL_Renderer *renderer, TTF_Font *font,
 }
 
 inline void renderHUD(SDL_Renderer *renderer, TTF_Font *font, const int score, const int health) {
-    SDL_Color white{255, 255, 255, 255};
-    std::string hudText = "Score: " + std::to_string(score) + "  HP: " + std::to_string(health);
+    const SDL_Color white{255, 255, 255, 255};
+    const std::string hudText = "Score: " + std::to_string(score) + "  HP: " + std::to_string(health);
 
     if (SDL_Texture *textTex = renderText(renderer, font, hudText, white)) {
         float w, h;
         SDL_GetTextureSize(textTex, &w, &h);
-        SDL_FRect dst{10.0f, 10.0f, w, h};
+        const SDL_FRect dst{10.0f, 10.0f, w, h};
         SDL_RenderTexture(renderer, textTex, nullptr, &dst);
         SDL_DestroyTexture(textTex);
     }
@@ -48,8 +48,8 @@ void renderSystem(SDL_Renderer *renderer, ECS &ecs, TTF_Font *font, const int sc
     SDL_RenderClear(renderer);
 
     // Draw all entities with Position plus Renderable
-    for (auto e: ecs.queryEntities<Position, Sprite>()) {
-        auto *pos = ecs.getComponent<Position>(e);
+    for (const auto e: ecs.queryEntities<Position, Sprite>()) {
+        const auto *pos = ecs.getComponent<Position>(e);
         auto *sprite = ecs.getComponent<Sprite>(e);
 
         sprite->dstRect.x = pos->x;
@@ -64,7 +64,7 @@ void renderSystem(SDL_Renderer *renderer, ECS &ecs, TTF_Font *font, const int sc
 }
 
 void enableANSI() {
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD dwMode = 0;
     GetConsoleMode(hOut, &dwMode);
     dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;

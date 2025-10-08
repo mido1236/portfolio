@@ -7,7 +7,9 @@
 #include "cleanup.h"
 #include "collision.h"
 #include "components.h"
+#include "destruction_system.h"
 #include "ecs.h"
+#include "event_system.h"
 #include "image.h"
 #include "Input.h"
 #include "movement.h"
@@ -32,11 +34,7 @@ int main() {
         return 1;
     }
 
-    // if (IMG_Init(IMG_INIT_PNG) == 0) {
-    //     SDL_Log("Failed to init SDL_image: %s", IMG_GetError());
-    //     return 1;
-    // }
-
+    // SDL TTF init
     if (!TTF_Init()) {
         SDL_Log("Failed to initialize SDL_ttf: %s", SDL_GetError());
         return 1;
@@ -78,6 +76,7 @@ int main() {
 
     int frame = 0;
     auto lastTime = chrono::steady_clock::now();
+    vector<Event> events;
     while (true) {
         if (collisionSystem(ecs)) break;
 
@@ -89,13 +88,16 @@ int main() {
         Input input = inputSystem();
         if (input.quit) break;
         spawnerSystem(ecs, spawnerEntity, WIDTH);
-        projectileSystem(ecs, 1);
+        auto toDestroy = vector<Entity>();
+        projectileSystem(ecs, 1, toDestroy, events);
         playerMovementSystem(ecs, input);
         attackSystem(ecs, seconds.count(), input);
         aiSystem(ecs);
         moveSystem(ecs, seconds.count());
-        auto health = ecs.getComponent<Health>(playerEntity);
-        auto score = ecs.getComponent<Score>(playerEntity);
+        eventSystem(ecs, events);
+        destructionSystem(ecs, toDestroy);
+        const auto health = ecs.getComponent<Health>(playerEntity);
+        const auto score = ecs.getComponent<Score>(playerEntity);
         renderSystem(renderer, ecs, font, score->current, health->current);
 
         frame++;

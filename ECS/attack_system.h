@@ -21,7 +21,7 @@ inline void attackSystem(ECS &ecs, const float dt, Input &input) {
 
             atk->cooldown = atk->fireRate;
             auto projectile = ecs.createEntity();
-            ecs.addComponent<Projectile>(projectile, {atk->damage, 30});
+            ecs.addComponent<Projectile>(projectile, {atk->damage, 30, e});
             ecs.addComponent<Position>(projectile, {pos->x + 8, pos->y});
             ecs.addComponent<Velocity>(projectile, {0, -300});
             ecs.addComponent<Renderable>(projectile, {'*'});

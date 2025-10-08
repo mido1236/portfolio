@@ -18,10 +18,10 @@ inline bool collisionSystem(ECS &ecs) {
 
     const auto player = players.front();
     auto *playerHealth = ecs.getComponent<Health>(player);
-    auto *playerSprite = ecs.getComponent<Sprite>(player);
+    const auto *playerSprite = ecs.getComponent<Sprite>(player);
 
     for (const auto &e: ecs.queryEntities<AI, Position>()) {
-        auto *aiSprite = ecs.getComponent<Sprite>(e);
+        const auto *aiSprite = ecs.getComponent<Sprite>(e);
 
         if (SDL_HasRectIntersectionFloat(&playerSprite->dstRect, &aiSprite->dstRect)) {
             playerHealth->current--;
