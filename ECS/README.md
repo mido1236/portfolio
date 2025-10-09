@@ -8,5 +8,7 @@ Of particular interest is the utilization of C++ techniques such as
 the **Standard Template Library** (STL) and, of course, 
 the **Simple DirectMedia Layer** (SDL).
 
+🔹 **[Entity Component System](https://github.com/mido1236/portfolio/tree/master/ECS)**
+
 ### Screenshot
 ![Main](img_game.png)
