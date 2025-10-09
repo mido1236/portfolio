@@ -7,7 +7,7 @@
 #include <conio.h>
 
 #include "ecs.h"
-#include "Input.h"
+#include "input.h"
 
 inline void attackSystem(ECS &ecs, const float dt, Input &input) {
     for (const auto &e: ecs.queryEntities<Player, Attack, Position>()) {

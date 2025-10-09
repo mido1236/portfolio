@@ -23,25 +23,25 @@ fetch_sdl3("" 3.2.24)
 fetch_sdl3(_ttf 3.2.2)
 fetch_sdl3(_image 3.2.4)
 
-add_executable(ECS main.cpp
-        components.h
-        ecs.h
-        component_array.h
-        entity.h
-        render_system.cpp
-        player.cpp
-        movement.h
-        collision.h
-        attack_system.h
-        Input.h
-        player_movement.h
-        projectile_system.h
-        spawner_system.h
-        cleanup.h
-        custom_random.h
-        image.h
-        destruction_system.h
-        event_system.h
+add_executable(ECS src/main.cpp
+        include/components.h
+        include/ecs.h
+        include/component_array.h
+        include/entity.h
+        src/render_system.cpp
+        src/player.cpp
+        include/movement.h
+        include/collision.h
+        include/attack_system.h
+        include/Input.h
+        include/player_movement.h
+        include/projectile_system.h
+        include/spawner_system.h
+        include/cleanup.h
+        include/custom_random.h
+        include/image.h
+        include/destruction_system.h
+        include/event_system.h
 )
 
 list(PREPEND CMAKE_PREFIX_PATH "${SDL3_DIR}" "${SDL3_image_DIR}" "${SDL3_ttf_DIR}")

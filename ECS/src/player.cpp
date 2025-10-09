@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 
-#include "Input.h"
+#include "../include/input.h"
 
 bool isKeyDown(const int vk) {
     return (GetAsyncKeyState(vk) & 0x8000) != 0;

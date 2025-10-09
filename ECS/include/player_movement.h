@@ -5,7 +5,7 @@
 #ifndef ECS_PLAYER_MOVEMENT_H
 #define ECS_PLAYER_MOVEMENT_H
 #include "ecs.h"
-#include "Input.h"
+#include "input.h"
 
 inline void playerMovementSystem(ECS &ecs, const Input &input) {
     for (const auto &e: ecs.queryEntities<Player>()) {
