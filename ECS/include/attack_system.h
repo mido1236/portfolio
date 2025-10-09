@@ -4,12 +4,11 @@
 
 #ifndef ECS_ATTACK_SYSTEM_H
 #define ECS_ATTACK_SYSTEM_H
-#include <conio.h>
 
 #include "ecs.h"
 #include "input.h"
 
-inline void attackSystem(ECS &ecs, const float dt, Input &input) {
+inline void attackSystem(ECS &ecs, const float dt, const Input &input) {
     for (const auto &e: ecs.queryEntities<Player, Attack, Position>()) {
         if (input.attack) {
             auto *atk = ecs.getComponent<Attack>(e);

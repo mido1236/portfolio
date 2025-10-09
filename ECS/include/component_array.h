@@ -14,14 +14,14 @@ struct IComponentArray {
     virtual void remove(Entity e) = 0;
 };
 
-template<typename T>
+template<typename>
 ComponentTypeID getComponentTypeID() {
     static ComponentTypeID id = nextComponentTypeID++;
     return id;
 }
 
 template<typename T>
-class ComponentArray : public IComponentArray {
+class ComponentArray final : public IComponentArray {
     vector<T> components;
     vector<Entity> entities;
     unordered_map<Entity, size_t> entityToIndex;

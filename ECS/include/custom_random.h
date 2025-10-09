@@ -12,8 +12,8 @@ inline std::mt19937 &rng() {
     return gen;
 }
 
-inline int randInt(int min, int max) {
-    std::uniform_int_distribution<> dist(min, max);
+inline int randInt(const int min, const int max) {
+    std::uniform_int_distribution dist(min, max);
     return dist(rng());
 }
 #endif //ECS_CUSTOM_RANDOM_H

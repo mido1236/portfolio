@@ -11,6 +11,6 @@ inline void destructionSystem(ECS &ecs, vector<Entity> &toDestroy) {
         ecs.destroyEntity(e);
     }
     toDestroy.clear();
-};
+}
 
 #endif //ECS_DESTRUCTION_SYSTEM_H

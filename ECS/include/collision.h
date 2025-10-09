@@ -33,6 +33,6 @@ inline bool collisionSystem(ECS &ecs) {
     }
 
     return false;
-};
+}
 
 #endif //ECS_COLLISION_H

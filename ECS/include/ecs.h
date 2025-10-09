@@ -16,7 +16,7 @@ class ECS {
 
 public:
     ECS() : nextEntityID(0) {}
-    ~ECS() { clear(); };
+    ~ECS() { clear(); }
 
     void clear() {
         componentArrays.clear();

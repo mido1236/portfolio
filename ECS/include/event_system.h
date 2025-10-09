@@ -33,5 +33,5 @@ inline void eventSystem(ECS &ecs, vector<Event> &events) {
         }
     }
     events.clear();
-};
+}
 #endif //ECS_EVENT_SYSTEM_H
