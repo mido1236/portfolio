@@ -1,5 +1,4 @@
 #include <SDL3/SDL.h>
-#include <iostream>
 #include <thread>
 
 #include "../include/ai.h"
