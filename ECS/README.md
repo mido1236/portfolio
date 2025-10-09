@@ -10,7 +10,7 @@ the **Simple DirectMedia Layer** (SDL).
 
 The overall approach is based on the following component array class:
 
-```
+```c++
 template<typename T>
 class ComponentArray : public IComponentArray {
 vector<T> components;
