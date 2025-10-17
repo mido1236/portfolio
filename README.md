@@ -1,26 +1,80 @@
-# 👋 Hi, I'm Ahmed Ezzat!
+# 👋 Hi, I'm Ahmed Ezzat
 
-🎯 **Node.js, TypeScript, C# Developer | (Hopefully) C++ Developer 😄 | Game Dev**
+🎮 **Software Engineer | Node.js, TypeScript, C# Developer | (Hopefully) C++ Developer 😄 | Game Dev**
 
-I'm passionate about **game development** and hope to some day work on actual game programming. Here, you'll (eventually) find some demos showcasing my skills in **C++** and other languages.
+I build systems that blend **gameplay engineering**, **C++ architecture**, and **performance-oriented design**.  
+This portfolio collects selected projects that demonstrate my focus on **ECS architecture**, **multithreading**, and **core system design** in modern C++.
 
-## 🚀 Featured Projects
+---
 
-🔹 **[Thread Pool Executor](https://github.com/mido1236/portfolio/tree/main/Projects/ThreadPoolExecutor)**  
-_A lightweight, multithreaded task executor in C++._
+## 🕹️ Featured Projects
 
-🔹 **[Huffman Tree Image Compression](https://github.com/mido1236/portfolio/tree/master/Projects/HuffmanImageCompressor)**  
-_A C++ program using huffman tree to compress/decompress PPM images._
+### 🎮 [ECS Game Framework (C++ / SDL3)](ECS/README.md)
+> A modular **Entity-Component-System** framework written in modern **C++20**, currently evolving toward a fully data-driven design.
 
-🔹 **[JPEG style Huffman Tree Image Compression](https://github.com/mido1236/portfolio/tree/master/Projects/JPEGHuffmanImageCompressor)**  
-_A C++ program using huffman tree, discrete cosine transform, and quantization to compress/decompress PPM images._
+Key features:
+- Core ECS with component storage and entity signatures
+- Systems for movement, rendering, AI, and events
+- Integration with **SDL3** for rendering and input
+- JSON-based **data-driven entity loading**
+- Designed for gameplay extensibility and experimentation
 
-🔹 **[SDL Starter Project](https://github.com/mido1236/portfolio/tree/master/Projects/SDLStarter)**  
-_A simple SDL project where the player avoids falling objects._
+📘 *Work in progress — gameplay logic, HUD, and prefab templates coming soon.*
 
-🔹 **[Entity Component System](ECS/README.md)**  
-_An Entity Component System for a simple vertical shooter game._
+---
 
-## 📫 Connect with Me!
-- 💼 [LinkedIn](https://www.linkedin.com/in/ahmedmezzat/)
-- 📧 Email: mido1236@gmail.com
+### ⚙️ [Thread Pool Executor (C++)](https://github.com/mido1236/portfolio/tree/main/Projects/ThreadPoolExecutor)
+> A simple, efficient **C++ thread pool** implementation built to explore concurrency primitives and task distribution.
+
+Highlights:
+- Fixed-size thread pool managing queued tasks
+- Uses modern C++ concurrency (`std::thread`, `std::condition_variable`)
+- Demonstrates safe task scheduling and worker synchronization
+- Lightweight, educational implementation for engine-side multithreading
+
+🧩 Technologies: `C++20`, `STL`, `Threading`, `Synchronization`
+
+---
+
+### 🧠 [JPEG style Image Compression Tool (C++)](https://github.com/mido1236/portfolio/tree/master/Projects/JPEGHuffmanImageCompressor)
+> A custom implementation of **Huffman coding** and **Discrete Cosine Transform (DCT)** for image compression.
+
+Features:
+- Encodes grayscale bitmaps using Huffman entropy coding
+- Applies Forward and Inverse DCT with quantization
+- Reconstructs compressed images from frequency-domain data
+- Clear, step-by-step implementation mimicking the JPEG pipeline
+
+🧩 Technologies: `C++17`, `DCT`, `Huffman Coding`, `Quantization`
+
+---
+
+## 🧰 Tech Stack
+
+**Languages:**  
+`C++20` • `C#` • `TypeScript` • `Bash`
+
+**Domains:**  
+`Gameplay Programming` • `Systems Architecture` • `Concurrency` • `Data-Driven Design`
+
+**Tools & Frameworks:**  
+`SDL3` • `CMake` • `OpenCV` • `STL` • `Modern C++` • `Git` • `CLion`
+
+---
+
+## 💬 About Me
+
+- 🎮 Passionate about **game systems**, **AI behaviors**, and **low-level engine development**  
+- 🧠 Enjoy turning abstract design ideas into robust, reusable frameworks  
+- 🧩 Currently focused on improving my ECS engine and exploring data-oriented design principles
+
+---
+
+## 🌐 Connect
+
+- 💼 [LinkedIn](https://www.linkedin.com/in/ahmedezzat)
+- 💻 [GitHub](https://github.com/mido1236)
+
+---
+
+> 🧩 *“Good gameplay code is invisible — it just feels right.”*
