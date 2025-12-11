@@ -16,6 +16,13 @@ A prototype puzzle dungeon mini-game - click any of the preview images to watch 
 [![Watch the video](https://img.youtube.com/vi/T9LuFTgkmKY/2.jpg)](https://youtu.be/T9LuFTgkmKY)
 [![Watch the video](https://img.youtube.com/vi/T9LuFTgkmKY/3.jpg)](https://youtu.be/T9LuFTgkmKY)
 
+Concepts utilized in making the prototype:
+- Modular assets
+- Collision channels and detection
+- Custom components for grabbing world objects, triggering actions on detecting overlaps, and moving actors
+- Physics handlers
+- Light sources
+
 ### 🎮 [ECS Game Framework (C++ / SDL3)](ECS/README.md)
 > A modular **Entity-Component-System** framework written in modern **C++20**, currently evolving toward a fully data-driven design.
 
@@ -25,8 +32,6 @@ Key features:
 - Integration with **SDL3** for rendering and input
 - JSON-based **data-driven entity loading**
 - Designed for gameplay extensibility and experimentation
-
-📘 *Work in progress — gameplay logic, HUD, and prefab templates coming soon.*
 
 ---
 
