@@ -9,7 +9,7 @@ This portfolio collects selected projects that demonstrate my focus on **ECS arc
 
 ## 🕹️ Featured Projects
 
-### Crypt Raider - Unreal Engine 5.5 
+### 🎮 Crypt Raider - Unreal Engine 5.5 
 A prototype puzzle dungeon mini-game - click any of the preview images to watch a sample video!
 
 [![Watch the video](https://img.youtube.com/vi/T9LuFTgkmKY/1.jpg)](https://youtu.be/T9LuFTgkmKY)
