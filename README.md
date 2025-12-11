@@ -10,8 +10,11 @@ This portfolio collects selected projects that demonstrate my focus on **ECS arc
 ## 🕹️ Featured Projects
 
 ### Crypt Raider - Unreal Engine 5.5 
-A prototype puzzle dungeon mini-game
-[![Watch the video](https://img.youtube.com/vi/<VIDEO_ID>/T9LuFTgkmKY.jpg)](https://youtu.be/T9LuFTgkmKY)
+A prototype puzzle dungeon mini-game - click any of the preview images to watch a sample video!
+
+[![Watch the video](https://img.youtube.com/vi/T9LuFTgkmKY/1.jpg)](https://youtu.be/T9LuFTgkmKY)
+[![Watch the video](https://img.youtube.com/vi/T9LuFTgkmKY/2.jpg)](https://youtu.be/T9LuFTgkmKY)
+[![Watch the video](https://img.youtube.com/vi/T9LuFTgkmKY/3.jpg)](https://youtu.be/T9LuFTgkmKY)
 
 ### 🎮 [ECS Game Framework (C++ / SDL3)](ECS/README.md)
 > A modular **Entity-Component-System** framework written in modern **C++20**, currently evolving toward a fully data-driven design.
