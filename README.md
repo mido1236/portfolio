@@ -35,6 +35,17 @@ Key features:
 
 ---
 
+### 🎮 [Football simulation server (C++) (WIP)](https://github.com/mido1236/portfolio/tree/master/football_server)
+> A simple football/soccer simulation server that accepts inputs from clients and advances their positions according to their attributes.
+
+Key features:
+- Systems for web sockets, matches and inputs
+- JSON-based communication
+- Parsing of binary data for client inputs
+- Utilizing Google Test framework for unit tests
+
+---
+
 ### ⚙️ [Thread Pool Executor (C++)](https://github.com/mido1236/portfolio/tree/main/Projects/ThreadPoolExecutor)
 > A simple, efficient **C++ thread pool** implementation built to explore concurrency primitives and task distribution.
 
