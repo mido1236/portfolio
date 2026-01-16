@@ -5,3 +5,4 @@ target_link_libraries(football_tests PRIVATE football_core GTest::gtest GTest::g
 # Discover tests for `ctest`
 include(GoogleTest)
 gtest_discover_tests(football_tests)
+target_compile_definitions(football_tests PRIVATE FOOTBALL_TESTING)

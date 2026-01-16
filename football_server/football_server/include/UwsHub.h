@@ -70,6 +70,7 @@ private:
 
   us_timer_t *timer_ = nullptr;
   uWS::App *app_ = nullptr;
+  atomic<us_listen_socket_t *> listenSocket_{nullptr};
 
   void run_(int port);
 

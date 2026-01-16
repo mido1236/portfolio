@@ -40,10 +40,24 @@ void GameServer::gameLoop(const int seconds) {
   const auto tickDur = std::chrono::milliseconds(1000 / tickRate);
   const auto end = clock::now() + std::chrono::seconds(seconds);
 
+  auto nextReport = clock::now() + std::chrono::seconds(1);
+
+  struct TickAgg {
+    u_int64 ticks = 0;
+    uint64_t drainedMsgs = 0;
+    uint64_t snapshotsPublished = 0;
+    double simMsSum = 0;
+    double simMsMax = 0;
+
+    void reset() { *this = TickAgg{}; }
+  } agg;
+
   while (running && clock::now() < end) {
     auto start = clock::now();
 
-    for (const auto &[playerId, type, text, bytes] : drainInboundMessages()) {
+    const auto batch = drainInboundMessages();
+    agg.drainedMsgs += batch.size();
+    for (const auto &[playerId, type, text, bytes] : batch) {
       switch (type) {
       case MsgType::Text:
         handleTextMessage(playerId, text);
@@ -57,11 +71,34 @@ void GameServer::gameLoop(const int seconds) {
     for (const auto &m : matches | std::views::values) {
       m->update();
       json j = m->makeSnapshot();
-      hub.publishText(matchTopic(m->getId()), j.dump(2));
+      hub.publishText(matchTopic(m->getId()), j.dump());
+      agg.snapshotsPublished++;
     }
 
-    if (auto elapsed = clock::now() - start; elapsed < tickDur)
+    auto elapsed = clock::now() - start;
+    double simMs = std::chrono::duration<double, std::milli>(elapsed).count();
+    agg.simMsSum += simMs;
+    agg.simMsMax = std::max(agg.simMsMax, simMs);
+
+    double sleptMs = 0;
+    if (elapsed < tickDur) {
       std::this_thread::sleep_for(tickDur - elapsed);
+      sleptMs =
+          std::chrono::duration<double, std::milli>(tickDur - elapsed).count();
+    }
+
+    agg.ticks++;
+
+    const auto now = clock::now();
+    if (now >= nextReport) {
+      std::cout << "ticks: " << agg.ticks << ", msgs: " << agg.drainedMsgs
+                << ", snapshots: " << agg.snapshotsPublished
+                << ", simMsSum: " << agg.simMsSum
+                << ", simMsMax: " << agg.simMsMax << ", sleptMs: " << sleptMs
+                << std::endl;
+      agg.reset();
+      nextReport = now + std::chrono::seconds(1);
+    }
   }
 }
 
@@ -137,6 +174,6 @@ void GameServer::start() {
   hub.start(9001);
 
   running = true;
-  gameLoop(10);
+  gameLoop(5);
   running = false;
 }

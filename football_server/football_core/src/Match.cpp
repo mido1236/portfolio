@@ -220,3 +220,7 @@ void Match::addPlayer(uint32_t playerId) {
   players.push_back(Player(playerId, "P" + std::to_string(playerId), 0.0f, 0.0f,
                            0.0f, 0.0f, 100.0f, 100.0f));
 }
+
+PlayerInputState *Match::getPlayerState(const uint32_t playerId) {
+  return &inputsByPlayer_[playerId];
+}

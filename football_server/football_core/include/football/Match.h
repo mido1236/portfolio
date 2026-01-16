@@ -41,7 +41,7 @@ struct InputCmd {
 class Match {
 public:
   static constexpr Tick MAX_FUTURE = 5;
-  static constexpr Tick MAX_PAST = 20;
+  static constexpr Tick MAX_PAST = 5;
   static constexpr size_t MAX_PLAYER_BUFFER = 64;
 
   explicit Match(int matchId);
@@ -50,7 +50,7 @@ public:
     requires std::constructible_from<GameEvent, Args...>
   void enqueueEvent(Args &&...args);
 
-  InputAcceptResult enqueueInput(uint32_t playerId, const InputCmd &cmd);
+  InputAcceptResult enqueueInput(uint32_t playerId, const InputCmd &in);
 
   MatchSnapshot makeSnapshot() const;
   void processScheduledEventsForTick_();
@@ -68,7 +68,12 @@ public:
   [[nodiscard]] const std::vector<Player> &getPlayers() const {
     return players;
   }
+
+#ifdef FOOTBALL_TESTING
   void set_current_tick(const Tick current_tick) { currentTick = current_tick; }
+#endif
+
+  PlayerInputState *getPlayerState(const uint32_t playerId);
 
 private:
   int matchId;

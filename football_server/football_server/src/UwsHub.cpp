@@ -19,16 +19,16 @@ void UwsHub::start(int port) {
 }
 
 void UwsHub::stop() {
-  if (running_.exchange(false))
+  if (!running_.exchange(false))
     return;
   if (auto *l = loop_.load(memory_order::acquire)) {
-    l->defer([this] {
+    l->defer([this, l] {
       if (timer_) {
         us_timer_close(timer_);
         timer_ = nullptr;
       }
-      if (app_) {
-        uWS::Loop::get()->free();
+      if (auto *ls = listenSocket_.exchange(nullptr, memory_order::acquire)) {
+        us_listen_socket_close(0, ls);
       }
     });
   }
@@ -114,12 +114,12 @@ void UwsHub::run_(int port) {
   uWS::App app;
   app_ = &app;
 
+  loop_.store(uWS::Loop::get(), memory_order::release);
+
   app.ws<PerSocketData>(
       "/*",
       {.open =
            [this](Ws *ws) {
-             loop_.store(uWS::Loop::get(), memory_order::release);
-
              const int id = nextPlayerId_.fetch_add(1, memory_order::relaxed);
              ws->getUserData()->playerId = id;
              socketsByPlayerId_[id] = ws;
@@ -162,7 +162,8 @@ void UwsHub::run_(int port) {
              cout << "Client disconnected (" << clients_.size() << ")" << endl;
            }});
 
-  app.listen(port, [port](const auto *token) {
+  app.listen(port, [&, port](us_listen_socket_t *token) {
+    listenSocket_.store(token, std::memory_order::release);
     if (token)
       std::cout << "[uWS] listening on port " << port << "\n";
     else
@@ -171,6 +172,8 @@ void UwsHub::run_(int port) {
 
   app.run();
 
+  listenSocket_.store(nullptr, std::memory_order::release);
+  loop_.store(nullptr, memory_order::release);
   app_ = nullptr;
 }
 

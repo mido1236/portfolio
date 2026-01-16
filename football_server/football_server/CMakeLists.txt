@@ -1,4 +1,4 @@
-add_library(football_server)
+add_executable(football_server)
 
 target_sources(football_server PRIVATE
         src/main.cpp
