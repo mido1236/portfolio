@@ -3,8 +3,8 @@
 //
 
 #define _HAS_STD_BYTE 0
-#include <Topics.h>
-#include <UwsHub.h>
+#include <football_server/Topics.h>
+#include <football_server/UwsHub.h>
 #include <span>
 
 using std::cout;
@@ -22,7 +22,7 @@ void UwsHub::stop() {
   if (!running_.exchange(false))
     return;
   if (auto *l = loop_.load(memory_order::acquire)) {
-    l->defer([this, l] {
+    l->defer([this] {
       if (timer_) {
         us_timer_close(timer_);
         timer_ = nullptr;
@@ -53,12 +53,6 @@ void UwsHub::broadcastBinary(std::vector<uint8_t> bytes) {
   scheduleFlush_();
 }
 
-void UwsHub::setOnBinaryMessage(
-    std::function<void(uint32_t, std::span<const uint8_t>)> cb) {
-  lock_guard lock(cb_m_);
-  onBinaryMessage_ = std::move(cb);
-}
-
 void UwsHub::publishBinary(std::string topic, std::vector<uint8_t> bytes) {
   auto *l = loop_.load(std::memory_order_acquire);
   if (!l)
@@ -85,13 +79,11 @@ void UwsHub::publishText(string topic, string text) {
   };
 }
 
-void UwsHub::setOnMessage(std::function<void(uint32_t, std::string_view)> cb) {
-  lock_guard lock(cb_m_);
-  onMessage_ = move(cb);
-}
-
 void UwsHub::joinMatch(const uint32_t playerId, const uint32_t matchId) {
   const auto ws = socketsByPlayerId_[playerId];
+
+  if (ws == nullptr)
+    return;
 
   if (matchId == -1) {
     ws->send(R"({"type":"error","msg":"Bad JOIN. Use: JOIN <matchId>"})",
@@ -110,6 +102,47 @@ void UwsHub::joinMatch(const uint32_t playerId, const uint32_t matchId) {
            uWS::OpCode::TEXT);
 }
 
+void UwsHub::onOpen(Ws *ws) {
+  const int id = nextPlayerId_.fetch_add(1, memory_order::relaxed);
+  ws->getUserData()->playerId = id;
+  socketsByPlayerId_[id] = ws;
+  ws->getUserData()->matchId = 0;
+
+  ws->send(R"( {"type":"welcome","cmd":"JOIN <matchId>"} )", uWS::OpCode::TEXT);
+
+  cout << "Client connected (" << clients_.size() << ")" << endl;
+}
+void UwsHub::onMessage(Ws *ws, const std::string_view message,
+                       const uWS::OpCode code) {
+  switch (code) {
+  case uWS::OpCode::TEXT:
+    inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
+                   MsgType::Text, string(message)});
+    break;
+  case uWS::OpCode::BINARY: {
+    const auto *data = reinterpret_cast<const uint8_t *>(message.data());
+    inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
+                   MsgType::Binary, "",
+                   std::vector(data, data + message.size())});
+    break;
+  }
+  default:;
+  }
+}
+void UwsHub::onClose(Ws *ws, int, std::string_view) {
+  lock_guard lock(clients_m_);
+  clients_.erase(std::ranges::remove(clients_, ws).begin(), clients_.end());
+  cout << "Client disconnected (" << clients_.size() << ")" << endl;
+
+  inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
+                 MsgType::Disconnect,
+                 "",
+                 {},
+                 DisconnectReason::ClosedByPeer,
+                 0,
+                 "Connection closed by peer"});
+}
+
 void UwsHub::run_(int port) {
   uWS::App app;
   app_ = &app;
@@ -118,49 +151,11 @@ void UwsHub::run_(int port) {
 
   app.ws<PerSocketData>(
       "/*",
-      {.open =
-           [this](Ws *ws) {
-             const int id = nextPlayerId_.fetch_add(1, memory_order::relaxed);
-             ws->getUserData()->playerId = id;
-             socketsByPlayerId_[id] = ws;
-             ws->getUserData()->matchId = 0;
-
-             ws->send(R"( {"type":"welcome","cmd":"JOIN <matchId>"} )",
-                      uWS::OpCode::TEXT);
-
-             cout << "Client connected (" << clients_.size() << ")" << endl;
-           },
+      {.open = [this](Ws *ws) { onOpen(ws); },
        .message =
            [this](Ws *ws, const std::string_view message,
-                  const uWS::OpCode code) {
-             if (code == uWS::OpCode::TEXT) {
-               function<void(uint32_t, string_view)> cb;
-               {
-                 lock_guard lock(cb_m_);
-                 cb = onMessage_;
-               }
-               if (cb)
-                 cb(ws->getUserData()->playerId, message);
-             } else if (code == uWS::OpCode::BINARY) {
-               function<void(uint32_t, std::span<const uint8_t>)> cb;
-               {
-                 lock_guard lock(cb_m_);
-                 cb = onBinaryMessage_;
-               }
-               if (!cb)
-                 return;
-               const auto *data =
-                   reinterpret_cast<const uint8_t *>(message.data());
-               cb(ws->getUserData()->playerId, std::span(data, message.size()));
-             }
-           },
-       .close =
-           [this](Ws *ws, int, std::string_view) {
-             lock_guard lock(clients_m_);
-             clients_.erase(std::ranges::remove(clients_, ws).begin(),
-                            clients_.end());
-             cout << "Client disconnected (" << clients_.size() << ")" << endl;
-           }});
+                  const uWS::OpCode code) { onMessage(ws, message, code); },
+       .close = [this](Ws *ws, int, std::string_view) { onClose(ws, 0, ""); }});
 
   app.listen(port, [&, port](us_listen_socket_t *token) {
     listenSocket_.store(token, std::memory_order::release);

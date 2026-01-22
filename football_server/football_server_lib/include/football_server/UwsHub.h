@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "InBoundQueue.h"
+
 #include <span>
 #include <uwebsockets/App.h>
 
@@ -26,7 +28,7 @@ class UwsHub {
 public:
   using Ws = uWS::WebSocket<false, true, PerSocketData>;
 
-  UwsHub() = default;
+  explicit UwsHub(InBoundQueue &q) : inboundQ(q) {}
 
   ~UwsHub() { stop(); };
 
@@ -36,12 +38,8 @@ public:
 
   void broadcast(const std::string &text);
 
-  void setOnMessage(std::function<void(uint32_t, std::string_view)> cb);
-
   void broadcastBinary(std::vector<uint8_t> bytes);
 
-  void setOnBinaryMessage(
-      std::function<void(uint32_t, std::span<const uint8_t>)> cb);
   void publishBinary(std::string topic, std::vector<uint8_t> bytes);
 
   void publishText(string topic, string text);
@@ -58,10 +56,12 @@ private:
 
   vector<Ws *> clients_;
   vector<string> pending_;
-  std::unordered_map<int, Ws *> socketsByPlayerId_;
+  std::unordered_map<uint32_t, Ws *> socketsByPlayerId_;
   std::vector<std::vector<uint8_t>> pendingBin_;
   function<void(uint32_t, string_view)> onMessage_;
   function<void(uint32_t, std::span<const uint8_t>)> onBinaryMessage_;
+  function<void(uint32_t)> onDisconnect_;
+
   atomic<uWS::Loop *> loop_{nullptr};
   std::atomic<bool> flushScheduled_{false};
   atomic<bool> pumpStarted_{false};
@@ -72,6 +72,8 @@ private:
   uWS::App *app_ = nullptr;
   atomic<us_listen_socket_t *> listenSocket_{nullptr};
 
+  InBoundQueue &inboundQ;
+
   void run_(int port);
 
   void scheduleFlush_();
@@ -79,6 +81,12 @@ private:
   void flushOnce_();
 
   void startPump_();
+
+  void onOpen(Ws *);
+
+  void onMessage(Ws *, std::string_view, uWS::OpCode);
+
+  void onClose(Ws *, int, std::string_view);
 };
 
 #endif // FOOTBALL_SERVER_UWSHUB_H

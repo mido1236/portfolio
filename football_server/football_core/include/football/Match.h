@@ -63,7 +63,9 @@ public:
 
   void addPlayer(uint32_t uint32);
 
-  [[nodiscard]] Tick getCurrentTick() const { return currentTick; };
+  [[nodiscard]] Tick getCurrentTick() const { return currentTick; }
+
+  void removePlayer(uint32_t pid);
 
   [[nodiscard]] const std::vector<Player> &getPlayers() const {
     return players;
@@ -85,7 +87,6 @@ private:
   std::priority_queue<GameEvent, std::vector<GameEvent>, GameEventLess>
       game_events;
   std::unordered_map<uint32_t, PlayerInputState> inputsByPlayer_;
-  std::unordered_map<uint32_t, PlayerState> players_;
 
   // Tunables (we'll externalize later)
   float maxSpeed; // units/sec

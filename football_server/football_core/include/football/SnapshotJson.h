@@ -5,6 +5,7 @@
 #ifndef FOOTBALL_SERVER_SNAPSHOTJSON_H
 #define FOOTBALL_SERVER_SNAPSHOTJSON_H
 
+#include <football/Match.h>
 #include <football/Snapshot.h>
 #include <nlohmann/json.hpp>
 

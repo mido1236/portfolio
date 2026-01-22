@@ -1,8 +1,8 @@
-add_executable(football_tests src/test_input_window.cpp)
-
-target_link_libraries(football_tests PRIVATE football_core GTest::gtest GTest::gtest_main)
+add_executable(football_tests src/test_input_window.cpp src/test_disconnect.cpp)
 
 # Discover tests for `ctest`
 include(GoogleTest)
 gtest_discover_tests(football_tests)
 target_compile_definitions(football_tests PRIVATE FOOTBALL_TESTING)
+
+target_link_libraries(football_tests PRIVATE football_core football_server_lib GTest::gtest GTest::gtest_main)

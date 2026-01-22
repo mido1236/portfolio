@@ -220,6 +220,10 @@ void Match::addPlayer(uint32_t playerId) {
   players.push_back(Player(playerId, "P" + std::to_string(playerId), 0.0f, 0.0f,
                            0.0f, 0.0f, 100.0f, 100.0f));
 }
+void Match::removePlayer(uint32_t pid) {
+  std::erase_if(players, [pid](const Player &p) { return p.id == pid; });
+  inputsByPlayer_.erase(pid);
+}
 
 PlayerInputState *Match::getPlayerState(const uint32_t playerId) {
   return &inputsByPlayer_[playerId];

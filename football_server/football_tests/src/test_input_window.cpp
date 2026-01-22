@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include <football/Match.h> // adjust
 
 TEST(InputWindow, RejectsTooOldInput) {
