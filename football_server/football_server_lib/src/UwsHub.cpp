@@ -69,7 +69,7 @@ void UwsHub::publishBinary(std::string topic, std::vector<uint8_t> bytes) {
   });
 }
 
-void UwsHub::publishText(string topic, string text) {
+void UwsHub::publishText(string topic, string text) const {
   if (auto *l = loop_.load(memory_order::acquire)) {
     l->defer([this, topic = std::move(topic), text = std::move(text)] {
       if (!app_)
@@ -80,7 +80,12 @@ void UwsHub::publishText(string topic, string text) {
 }
 
 void UwsHub::joinMatch(const uint32_t playerId, const uint32_t matchId) {
-  const auto ws = socketsByPlayerId_[playerId];
+  uWS::WebSocket<false, true, PerSocketData> *ws;
+
+  {
+    lock_guard lock(sockets_m_);
+    ws = socketsByPlayerId_[playerId];
+  }
 
   if (ws == nullptr)
     return;
@@ -105,10 +110,15 @@ void UwsHub::joinMatch(const uint32_t playerId, const uint32_t matchId) {
 void UwsHub::onOpen(Ws *ws) {
   const int id = nextPlayerId_.fetch_add(1, memory_order::relaxed);
   ws->getUserData()->playerId = id;
-  socketsByPlayerId_[id] = ws;
+  {
+    lock_guard lock(sockets_m_);
+    socketsByPlayerId_[id] = ws;
+  }
   ws->getUserData()->matchId = 0;
 
-  ws->send(R"( {"type":"welcome","cmd":"JOIN <matchId>"} )", uWS::OpCode::TEXT);
+  ws->send(R"( {"type":"welcome","playerId":")" + std::to_string(id) +
+               R"(","cmd":"JOIN <matchId>"} )",
+           uWS::OpCode::TEXT);
 
   cout << "Client connected (" << clients_.size() << ")" << endl;
 }

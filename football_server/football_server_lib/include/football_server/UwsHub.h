@@ -42,7 +42,7 @@ public:
 
   void publishBinary(std::string topic, std::vector<uint8_t> bytes);
 
-  void publishText(string topic, string text);
+  void publishText(string topic, string text) const;
 
   void joinMatch(uint32_t playerId, uint32_t matchId);
 
@@ -53,6 +53,7 @@ private:
   mutex clients_m_;
   mutex pending_m_;
   mutex cb_m_;
+  mutex sockets_m_;
 
   vector<Ws *> clients_;
   vector<string> pending_;

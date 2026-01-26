@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <span>
 #include <string_view>
+#include <vector>
 
 enum class MsgType : uint8_t { Text, Binary, Disconnect };
 
@@ -23,11 +24,20 @@ struct InBoundMsg {
 
   // For text/binary
   std::string text;
-  std::span<const uint8_t> bytes;
+  std::vector<uint8_t> bytes;
 
   // For disconnect
   DisconnectReason reason{DisconnectReason::Unknown};
   int closeCode{0};
   std::string closeMessage;
+
+  static InBoundMsg makeBinary(const uint32_t pid, const uint8_t *data,
+                               const size_t size) {
+    InBoundMsg m;
+    m.playerId = pid;
+    m.type = MsgType::Binary;
+    m.bytes.assign(data, data + size); // deep copy
+    return m;
+  }
 };
 #endif // FOOTBALL_SERVER_LIB_MESSAGES_H

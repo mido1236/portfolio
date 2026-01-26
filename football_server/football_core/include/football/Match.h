@@ -15,7 +15,8 @@ enum class InputAcceptResult {
   Accepted,
   DroppedTooOld,
   DroppedTooEarly,
-  Deduped
+  Deduped,
+  Rejected
 };
 
 struct BufferedCmd {

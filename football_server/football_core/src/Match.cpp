@@ -113,6 +113,10 @@ InputAcceptResult Match::enqueueInput(const uint32_t playerId,
   const BufferedCmd cmd = {in.clientTick, clamp(in.ax), clamp(in.ay),
                            in.buttons};
 
+  if (!inputsByPlayer_.contains(playerId)) {
+    return InputAcceptResult::Rejected;
+  }
+
   auto &st = inputsByPlayer_[playerId];
   auto &dq = st.pending;
   auto result = InputAcceptResult::Accepted;
@@ -219,6 +223,7 @@ void Match::update() {
 void Match::addPlayer(uint32_t playerId) {
   players.push_back(Player(playerId, "P" + std::to_string(playerId), 0.0f, 0.0f,
                            0.0f, 0.0f, 100.0f, 100.0f));
+  inputsByPlayer_[playerId] = {};
 }
 void Match::removePlayer(uint32_t pid) {
   std::erase_if(players, [pid](const Player &p) { return p.id == pid; });

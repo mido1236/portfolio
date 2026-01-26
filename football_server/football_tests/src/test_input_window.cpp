@@ -54,27 +54,3 @@ TEST(InputWindow, AcceptsBoundaryTicks) {
                                           newestAllowed}),
             InputAcceptResult::Accepted);
 }
-
-TEST(InputIntegrity, DetectsDuplicateInputs) {
-  Match match(1);
-
-  const uint32_t playerId = 42;
-  match.addPlayer(playerId);
-
-  const uint32_t serverTick = 100;
-  match.set_current_tick(serverTick);
-
-  const auto res = match.enqueueInput(
-      playerId, {static_cast<uint32_t>(match.getId()), serverTick});
-
-  EXPECT_EQ(res, InputAcceptResult::Accepted);
-
-  EXPECT_EQ(match.getPlayerState(playerId)->pending.back().ax, 0.f);
-
-  const auto res2 = match.enqueueInput(
-      playerId, {static_cast<uint32_t>(match.getId()), serverTick, 0.5f});
-
-  EXPECT_EQ(res2, InputAcceptResult::Deduped);
-
-  EXPECT_EQ(match.getPlayerState(playerId)->pending.back().ax, 0.5f);
-}

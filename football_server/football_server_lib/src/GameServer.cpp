@@ -144,7 +144,7 @@ void GameServer::handleBinaryMessage(const uint32_t playerId,
                                      const std::span<const uint8_t> bytes) {
   InputCmd cmd;
 
-  if (!parseInputCmd(bytes, cmd))
+  if (!playerToMatch.contains(playerId) || !parseInputCmd(bytes, cmd))
     return;
   if (const auto it = matches.find(cmd.matchId); it != matches.end())
     it->second->enqueueInput(playerId, cmd);
@@ -154,6 +154,10 @@ void GameServer::handleTextMessage(const uint32_t playerId,
                                    const std::string_view msg) {
   if (msg.starts_with("JOIN ") && msg.size() > 5) {
     joinMatch(playerId, msg);
+  }
+  if (msg == "LEAVE") {
+    // reuse your disconnect teardown path (but reason differs)
+    handleDisconnect(playerId, DisconnectReason::ClosedByPeer, 0, "LEAVE");
   }
 }
 
