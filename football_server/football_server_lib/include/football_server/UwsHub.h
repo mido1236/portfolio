@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "IPublisher.h"
 #include "InBoundQueue.h"
 
 #include <span>
@@ -24,13 +25,13 @@ struct PerSocketData {
   uint32_t matchId{0};
 };
 
-class UwsHub {
+class UwsHub final : public IPublisher {
 public:
   using Ws = uWS::WebSocket<false, true, PerSocketData>;
 
   explicit UwsHub(InBoundQueue &q) : inboundQ(q) {}
 
-  ~UwsHub() { stop(); };
+  ~UwsHub() override { stop(); };
 
   void start(int port);
 
@@ -42,7 +43,7 @@ public:
 
   void publishBinary(std::string topic, std::vector<uint8_t> bytes);
 
-  void publishText(string topic, string text) const;
+  void publishText(string topic, string text) override;
 
   void joinMatch(uint32_t playerId, uint32_t matchId);
 

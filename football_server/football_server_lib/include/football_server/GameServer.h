@@ -4,6 +4,7 @@
 
 #ifndef FOOTBALL_SERVER_GAMESERVER_H
 #define FOOTBALL_SERVER_GAMESERVER_H
+#include "IPublisher.h"
 #include "InBoundQueue.h"
 
 #include <concurrentqueue/moodycamel/concurrentqueue.h>
@@ -41,8 +42,8 @@ struct TickAgg {
 
 class GameServer {
 public:
-  GameServer(InBoundQueue &q, UwsHub &h)
-      : running(false), tickRate(1), inboundQ(q), hub(h) {}
+  GameServer(InBoundQueue &q, UwsHub &h, IPublisher &pub)
+      : running(false), tickRate(1), inboundQ(q), hub(h), pub_(pub) {}
 
   void start();
 
@@ -66,6 +67,7 @@ private:
   bool running;
   int tickRate;
   InBoundQueue &inboundQ;
+  IPublisher &pub_;
   UwsHub &hub;
   std::unordered_map<uint32_t, std::unique_ptr<Match>> matches;
   std::unordered_map<uint32_t, uint32_t> playerToMatch;

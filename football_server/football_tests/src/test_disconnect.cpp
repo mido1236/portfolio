@@ -1,4 +1,6 @@
 #include "../../football_server_lib/include/football_server/GameServer.h"
+#include "../include/publisher.h"
+#include "football_server/Topics.h"
 
 #include <football/Match.h> // adjust
 #include <gtest/gtest.h>
@@ -6,7 +8,7 @@
 TEST(Disconnect, PlayerDisconnectsGracefully) {
   InBoundQueue queue;
   UwsHub hub(queue);
-  GameServer server(queue, hub);
+  GameServer server(queue, hub, hub);
 
   server.addMatch(1);
   auto match = server.getMatch(1)->get();
@@ -29,7 +31,8 @@ TEST(Disconnect, PlayerDisconnectsGracefully) {
 TEST(Disconnect, PlayerLeavesMatchButStaysConnected) {
   InBoundQueue queue;
   UwsHub hub(queue);
-  GameServer server(queue, hub);
+  CapturingPublisher pub;
+  GameServer server(queue, hub, pub);
 
   server.addMatch(1);
   auto match = server.getMatch(1)->get();
@@ -43,8 +46,15 @@ TEST(Disconnect, PlayerLeavesMatchButStaysConnected) {
       players, [](const Player &p) { return p.id == playerId; });
   EXPECT_NE(it, players.end());
 
+  EXPECT_EQ(pub.lastTopic, matchTopic(1));
+  EXPECT_NE(pub.lastText.find(R"("id":)" + std::to_string(playerId)),
+            string::npos);
+
   queue.push({playerId, MsgType::Text, "LEAVE"});
   server.advance_tick();
+
+  EXPECT_EQ(pub.lastText.find(R"("id":)" + std::to_string(playerId)),
+            string::npos);
 
   match = server.getMatch(1)->get();
   players = match->getPlayers();

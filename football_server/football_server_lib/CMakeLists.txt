@@ -1,5 +1,6 @@
 add_library(football_server_lib
-        include/football_server/Messages.h)
+        include/football_server/Messages.h
+        include/football_server/IPublisher.h)
 
 target_sources(football_server_lib PRIVATE
         src/InBoundQueue.cpp

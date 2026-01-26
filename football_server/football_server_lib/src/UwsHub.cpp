@@ -69,7 +69,7 @@ void UwsHub::publishBinary(std::string topic, std::vector<uint8_t> bytes) {
   });
 }
 
-void UwsHub::publishText(string topic, string text) const {
+void UwsHub::publishText(string topic, string text) {
   if (auto *l = loop_.load(memory_order::acquire)) {
     l->defer([this, topic = std::move(topic), text = std::move(text)] {
       if (!app_)

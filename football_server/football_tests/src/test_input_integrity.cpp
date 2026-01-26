@@ -1,3 +1,4 @@
+#include "../include/publisher.h"
 #include "football_server/GameServer.h"
 #include "football_server/InBoundQueue.h"
 #include "football_server/UwsHub.h"
@@ -53,15 +54,14 @@ TEST(InputIntegrity, RejectsMissingPlayers) {
 TEST(Input, BinaryIgnoredWhenNotInMatch) {
   InBoundQueue queue;
   UwsHub hub(queue);
-  GameServer server(queue, hub);
+  GameServer server(queue, hub, hub);
 
   constexpr uint32_t playerId = 7;
 
   // Send binary input before JOIN
   std::vector<uint8_t> bogusInput = {0x01, 0x02, 0x03};
-  queue.push(InBoundMsg::makeBinary(playerId,
-                                    bogusInput.data(),
-                                    bogusInput.size()));
+  queue.push(
+      InBoundMsg::makeBinary(playerId, bogusInput.data(), bogusInput.size()));
 
   // Should not crash or enqueue anything
   EXPECT_NO_THROW(server.advance_tick());

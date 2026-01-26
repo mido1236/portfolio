@@ -68,7 +68,7 @@ void GameServer::process_game_tick(
   for (const auto &m : matches | std::views::values) {
     m->update();
     json j = m->makeSnapshot();
-    hub.publishText(matchTopic(m->getId()), j.dump());
+    pub_.publishText(matchTopic(m->getId()), j.dump());
     agg.snapshotsPublished++;
   }
 

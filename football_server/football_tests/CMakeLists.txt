@@ -1,5 +1,7 @@
 add_executable(football_tests src/test_input_window.cpp src/test_disconnect.cpp
-        src/test_input_integrity.cpp)
+        src/test_input_integrity.cpp
+        src/publisher.cpp
+        include/publisher.h)
 
 # Discover tests for `ctest`
 include(GoogleTest)

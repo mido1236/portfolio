@@ -3,7 +3,7 @@
 struct App {
   InBoundQueue inbound;
   UwsHub hub{inbound};
-  GameServer server{inbound, hub};
+  GameServer server{inbound, hub, hub};
 };
 
 int main() {
