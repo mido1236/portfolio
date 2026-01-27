@@ -11,13 +11,77 @@
 
 class InBoundQueue {
 public:
-  void push(InBoundMsg m) {
-    q_.enqueue(std::move(m));
+  struct Config {
+    uint32_t capacity;
+    uint32_t reserved_for_disconnect;
+    Config() : capacity(10'000), reserved_for_disconnect(1024) {}
+  };
+
+  explicit InBoundQueue(const Config cfg = Config())
+      : capacity(cfg.capacity), reservedForDisconnect(std::min(
+                                    cfg.reserved_for_disconnect, cfg.capacity)),
+        permits_(capacity - reservedForDisconnect),
+        disconnect_permits(reservedForDisconnect), q_(cfg.capacity) {}
+
+  bool push_disconnect(InBoundMsg m) {
+    if (!try_acquire(disconnect_permits))
+      return false;
+    if (!q_.enqueue(std::move(m))) {
+      release(disconnect_permits);
+      return false;
+    }
+    return true;
   }
-  bool try_pop(InBoundMsg &out) { return q_.try_dequeue(out); }
+
+  bool push(InBoundMsg m) {
+    if (m.type == MsgType::Disconnect) {
+      return push_disconnect(m);
+    }
+    if (!try_acquire(permits_))
+      return false;
+
+    if (!q_.enqueue(std::move(m))) {
+      release(permits_);
+      return false;
+    }
+    return true;
+  }
+
+  bool try_pop(InBoundMsg &out) {
+    if (!q_.try_dequeue(out))
+      return false;
+
+    if (out.type == MsgType::Disconnect)
+      release(disconnect_permits);
+    else
+      release(permits_);
+
+    return true;
+  }
 
 private:
+  const uint32_t capacity;
+  const uint32_t reservedForDisconnect;
+
+  std::atomic<int64_t> permits_;
+  std::atomic<int64_t> disconnect_permits;
+
   moodycamel::ConcurrentQueue<InBoundMsg> q_;
+
+  static bool try_acquire(std::atomic<int64_t> &permits) {
+    int64_t cur = permits.load(std::memory_order_relaxed);
+    while (cur > 0) {
+      if (!permits.compare_exchange_weak(cur, cur - 1,
+                                         std::memory_order_acquire,
+                                         std::memory_order_relaxed))
+        return true;
+    }
+    return false;
+  }
+
+  static void release(std::atomic<int64_t> &permits) noexcept {
+    permits.fetch_add(1, std::memory_order_release);
+  }
 };
 
 #endif // FOOTBALL_SERVER_LIB_INBOUNDQUEUE_H

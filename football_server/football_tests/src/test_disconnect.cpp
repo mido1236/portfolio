@@ -6,7 +6,7 @@
 #include <gtest/gtest.h>
 
 TEST(Disconnect, PlayerDisconnectsGracefully) {
-  InBoundQueue queue;
+  InBoundQueue queue({.capacity = 100, .reserved_for_disconnect = 10});
   UwsHub hub(queue);
   GameServer server(queue, hub, hub);
 
@@ -29,7 +29,7 @@ TEST(Disconnect, PlayerDisconnectsGracefully) {
 }
 
 TEST(Disconnect, PlayerLeavesMatchButStaysConnected) {
-  InBoundQueue queue;
+  InBoundQueue queue({.capacity = 100, .reserved_for_disconnect = 10});
   UwsHub hub(queue);
   CapturingPublisher pub;
   GameServer server(queue, hub, pub);

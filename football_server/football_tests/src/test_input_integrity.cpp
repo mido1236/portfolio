@@ -52,7 +52,7 @@ TEST(InputIntegrity, RejectsMissingPlayers) {
 }
 
 TEST(Input, BinaryIgnoredWhenNotInMatch) {
-  InBoundQueue queue;
+  InBoundQueue queue({.capacity = 100, .reserved_for_disconnect = 10});
   UwsHub hub(queue);
   GameServer server(queue, hub, hub);
 
