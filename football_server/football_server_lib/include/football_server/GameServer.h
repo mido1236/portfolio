@@ -73,7 +73,7 @@ private:
   std::unordered_map<uint32_t, uint32_t> playerToMatch;
 
   void seedDemo();
-  vector<InBoundMsg> drainInboundMessages();
+  vector<InBoundMsg> drainInboundMessages() const;
 
   void handleDisconnect(uint32_t pid, DisconnectReason reason, int code,
                         const string &msg);

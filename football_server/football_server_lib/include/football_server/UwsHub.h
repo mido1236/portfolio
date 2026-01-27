@@ -41,7 +41,7 @@ public:
 
   void broadcastBinary(std::vector<uint8_t> bytes);
 
-  void publishBinary(std::string topic, std::vector<uint8_t> bytes);
+  void publishBinary(std::string topic, std::vector<uint8_t> bytes) const;
 
   void publishText(string topic, string text) override;
 
@@ -86,7 +86,7 @@ private:
 
   void onOpen(Ws *);
 
-  void onMessage(Ws *, std::string_view, uWS::OpCode);
+  void onMessage(Ws *, std::string_view, uWS::OpCode) const;
 
   void onClose(Ws *, int, std::string_view);
 };

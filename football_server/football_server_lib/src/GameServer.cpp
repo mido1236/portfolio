@@ -23,7 +23,7 @@ void GameServer::seedDemo() {
   matches.emplace(1, std::move(m));
 }
 
-vector<InBoundMsg> GameServer::drainInboundMessages() {
+vector<InBoundMsg> GameServer::drainInboundMessages() const {
   InBoundMsg m;
   vector<InBoundMsg> batch;
 

@@ -53,7 +53,7 @@ void UwsHub::broadcastBinary(std::vector<uint8_t> bytes) {
   scheduleFlush_();
 }
 
-void UwsHub::publishBinary(std::string topic, std::vector<uint8_t> bytes) {
+void UwsHub::publishBinary(std::string topic, std::vector<uint8_t> bytes) const {
   auto *l = loop_.load(std::memory_order_acquire);
   if (!l)
     return;
@@ -123,7 +123,7 @@ void UwsHub::onOpen(Ws *ws) {
   cout << "Client connected (" << clients_.size() << ")" << endl;
 }
 void UwsHub::onMessage(Ws *ws, const std::string_view message,
-                       const uWS::OpCode code) {
+                       const uWS::OpCode code) const {
   switch (code) {
   case uWS::OpCode::TEXT:
     inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
