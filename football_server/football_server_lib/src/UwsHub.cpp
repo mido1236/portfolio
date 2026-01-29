@@ -53,7 +53,8 @@ void UwsHub::broadcastBinary(std::vector<uint8_t> bytes) {
   scheduleFlush_();
 }
 
-void UwsHub::publishBinary(std::string topic, std::vector<uint8_t> bytes) const {
+void UwsHub::publishBinary(std::string topic,
+                           std::vector<uint8_t> bytes) const {
   auto *l = loop_.load(std::memory_order_acquire);
   if (!l)
     return;
@@ -120,37 +121,62 @@ void UwsHub::onOpen(Ws *ws) {
                R"(","cmd":"JOIN <matchId>"} )",
            uWS::OpCode::TEXT);
 
-  cout << "Client connected (" << clients_.size() << ")" << endl;
+  cout << "Client connected (" << id << ")" << endl;
+}
+
+InBoundMsg UwsHub::makeText(const uint32_t playerId,
+                            const std::string_view message) {
+  return {playerId, MsgType::Text, string(message)};
+}
+
+InBoundMsg UwsHub::makeBinary(const uint32_t playerId,
+                              const std::string_view message) {
+  const auto *data = reinterpret_cast<const uint8_t *>(message.data());
+  return {playerId, MsgType::Binary, "", vector(data, data + message.size())};
+}
+
+void UwsHub::onMessageIngress(const uint32_t playerId,
+                              const std::string_view message,
+                              const uWS::OpCode code) const {
+  switch (code) {
+  case uWS::OpCode::TEXT:
+    if (message.size() > limits.maxTextBytes)
+      ++stats.drop_text_too_large;
+    else if (!inboundQ.push(makeText(playerId, message)))
+      ++stats.drop_queue_full;
+    break;
+  case uWS::OpCode::BINARY:
+    if (message.size() > limits.maxBinaryBytes)
+      ++stats.drop_bin_too_large;
+    else if (!inboundQ.push(makeBinary(playerId, message)))
+      ++stats.drop_queue_full;
+    break;
+  default:;
+    ++stats.drop_unsupported_opcode;
+  }
 }
 void UwsHub::onMessage(Ws *ws, const std::string_view message,
                        const uWS::OpCode code) const {
-  switch (code) {
-  case uWS::OpCode::TEXT:
-    inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
-                   MsgType::Text, string(message)});
-    break;
-  case uWS::OpCode::BINARY: {
-    const auto *data = reinterpret_cast<const uint8_t *>(message.data());
-    inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
-                   MsgType::Binary, "",
-                   std::vector(data, data + message.size())});
-    break;
-  }
-  default:;
-  }
-}
-void UwsHub::onClose(Ws *ws, int, std::string_view) {
-  lock_guard lock(clients_m_);
-  clients_.erase(std::ranges::remove(clients_, ws).begin(), clients_.end());
-  cout << "Client disconnected (" << clients_.size() << ")" << endl;
+  const auto playerId = static_cast<uint32_t>(ws->getUserData()->playerId);
 
-  inboundQ.push({static_cast<uint32_t>(ws->getUserData()->playerId),
-                 MsgType::Disconnect,
-                 "",
-                 {},
-                 DisconnectReason::ClosedByPeer,
-                 0,
-                 "Connection closed by peer"});
+  onMessageIngress(playerId, message, code);
+}
+
+InBoundMsg UwsHub::makeDisconnect(const uint32_t player_id) {
+  return {player_id,
+          MsgType::Disconnect,
+          "",
+          {},
+          DisconnectReason::ClosedByPeer,
+          0,
+          "Connection closed by peer"};
+}
+
+void UwsHub::onClose(Ws *ws, int, std::string_view) const {
+  const auto playerId = static_cast<uint32_t>(ws->getUserData()->playerId);
+
+  cout << "Client disconnected (" << playerId << ")" << endl;
+  inboundQ.push(makeDisconnect(playerId));
 }
 
 void UwsHub::run_(int port) {

@@ -12,14 +12,17 @@
 class InBoundQueue {
 public:
   struct Config {
-    uint32_t capacity = 10'000;
-    uint32_t reserved_for_disconnect = 1024;
-    // Config(const uint32_t capacity, const uint32_t reserved_for_disconnect)
-    //     : capacity(capacity), reserved_for_disconnect(reserved_for_disconnect) {}
-    // Config() : Config(10'000, 1024) {}
+    uint32_t capacity;
+    uint32_t reserved_for_disconnect;
+
+    static Config Default() {
+      return {.capacity = 10'000, .reserved_for_disconnect = 256};
+    }
   };
 
-  explicit InBoundQueue(const Config cfg = Config{})
+  InBoundQueue() : InBoundQueue(Config::Default()) {}
+
+  explicit InBoundQueue(const Config cfg)
       : capacity(cfg.capacity), reservedForDisconnect(std::min(
                                     cfg.reserved_for_disconnect, cfg.capacity)),
         permits_(capacity - reservedForDisconnect),
