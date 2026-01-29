@@ -64,6 +64,22 @@ public:
     return true;
   }
 
+  uint32_t in_flight_normal() const noexcept {
+    // normal in-flight = (capacity - reserved) - normal_permits
+    const int64_t p = permits_.load(std::memory_order_relaxed);
+    return static_cast<uint32_t>((capacity - reservedForDisconnect) - p);
+  }
+
+  uint32_t in_flight_disconnect() const noexcept {
+    const int64_t p = disconnect_permits.load(std::memory_order_relaxed);
+    return static_cast<uint32_t>(reservedForDisconnect - p);
+  }
+
+  uint32_t approx_size() const noexcept {
+    // exact in-flight total with this wrapper
+    return in_flight_normal() + in_flight_disconnect();
+  }
+
 private:
   const uint32_t capacity;
   const uint32_t reservedForDisconnect;
