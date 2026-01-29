@@ -23,16 +23,18 @@ void GameServer::seedDemo() {
   matches.emplace(1, std::move(m));
 }
 
-vector<InBoundMsg> GameServer::drainInboundMessages() const {
+vector<InBoundMsg> GameServer::drainInboundMessages(const size_t limit) const {
   InBoundMsg m;
   vector<InBoundMsg> batch;
 
-  while (inboundQ.try_pop(m)) {
+  int d = 0;
+  while (d++ < limit && inboundQ.try_pop(m)) {
     batch.push_back(m);
   }
   return batch;
 }
-void GameServer::handleDisconnect(uint32_t pid, DisconnectReason reason,
+
+void GameServer::handleDisconnect(const uint32_t pid, DisconnectReason reason,
                                   int code, const string &msg) {
   if (const auto pit = playerToMatch.find(pid); pit != playerToMatch.end()) {
     if (const auto it = matches.find(pit->second); it != matches.end()) {
@@ -43,14 +45,8 @@ void GameServer::handleDisconnect(uint32_t pid, DisconnectReason reason,
   std::cout << "Disconnected: " << msg << std::endl;
 }
 
-void GameServer::process_game_tick(
-    const std::chrono::milliseconds tickDur,
-    std::chrono::time_point<std::chrono::steady_clock> nextReport) {
-  TickAgg agg;
-  const auto start = std::chrono::steady_clock::now();
-
-  const auto batch = drainInboundMessages();
-  agg.drainedMsgs += batch.size();
+size_t GameServer::processInbound(const int limit) {
+  const auto batch = drainInboundMessages(limit);
   for (const auto &[playerId, type, text, bytes, reason, code, msg] : batch) {
     switch (type) {
     case MsgType::Text:
@@ -61,9 +57,20 @@ void GameServer::process_game_tick(
       break;
     case MsgType::Disconnect:
       handleDisconnect(playerId, reason, code, msg);
+      break;
     default:;
     }
   }
+  return batch.size();
+}
+
+void GameServer::process_game_tick(
+    const std::chrono::milliseconds tickDur,
+    std::chrono::time_point<std::chrono::steady_clock> nextReport) {
+  TickAgg agg;
+  const auto start = std::chrono::steady_clock::now();
+
+  agg.drainedMsgs += processInbound(MAX_MSGS_PER_TICK);
 
   for (const auto &m : matches | std::views::values) {
     m->update();

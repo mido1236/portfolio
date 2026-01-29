@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 
 TEST(Ingress, RespectsQueueSizeLimits) {
-  constexpr uint32_t capacity = 5;
-  constexpr uint32_t r = 2;
+  constexpr uint32_t capacity = 50;
+  constexpr uint32_t r = 20;
   InBoundQueue q({.capacity = capacity, .reserved_for_disconnect = r});
 
   for (int i = 0; i < capacity - r; i++)

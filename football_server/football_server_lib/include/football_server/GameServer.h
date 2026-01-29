@@ -63,7 +63,10 @@ public:
   };
 #endif
 
+  size_t processInbound(int limit);
+
 private:
+  size_t MAX_MSGS_PER_TICK = 2000;
   bool running;
   int tickRate;
   InBoundQueue &inboundQ;
@@ -73,7 +76,8 @@ private:
   std::unordered_map<uint32_t, uint32_t> playerToMatch;
 
   void seedDemo();
-  vector<InBoundMsg> drainInboundMessages() const;
+
+  vector<InBoundMsg> drainInboundMessages(size_t limit) const;
 
   void handleDisconnect(uint32_t pid, DisconnectReason reason, int code,
                         const string &msg);
