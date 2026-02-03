@@ -36,7 +36,7 @@ Key features:
 ---
 
 ### 🎮 [Football simulation server (C++) (WIP)](https://github.com/mido1236/portfolio/tree/master/football_server)
-> A simple football/soccer simulation server that accepts inputs from clients and advances their positions according to their attributes.
+> A simple football/soccer simulation server based on the [uWebSockets](https://github.com/uNetworking/uWebSockets) library that accepts inputs from clients and advances their positions according to their attributes.
 
 Key features:
 - Systems for web sockets, matches and inputs
