@@ -1,7 +1,7 @@
 # Authoritative multiplayer football/soccer server
 
 Hello and welcome to the football server! 
-This is a multiplayer football server written in C++17 using the [uWebSockets](https://github.com/uNetworking/uWebSockets) library.
+This is a multiplayer football server written in C++20 using the [uWebSockets](https://github.com/uNetworking/uWebSockets) library.
 
 Features:
 - Multiplayer
