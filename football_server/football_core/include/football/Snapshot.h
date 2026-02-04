@@ -23,4 +23,10 @@ struct MatchSnapshot {
   std::vector<PlayerState> players;
 };
 
+struct OutBoundSnapshot {
+  int matchId;
+  Tick tick;
+  std::string json;
+};
+
 #endif // FOOTBALL_SERVER_SNAPSHOT_H

@@ -20,7 +20,7 @@ enum class DisconnectReason : uint8_t {
 
 struct InBoundMsg {
   uint32_t playerId{0};
-  MsgType type;
+  MsgType type{MsgType::Text};
 
   // For text/binary
   std::string text;

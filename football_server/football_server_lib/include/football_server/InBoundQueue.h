@@ -6,8 +6,6 @@
 #define FOOTBALL_SERVER_LIB_INBOUNDQUEUE_H
 #include <football_server/Messages.h>
 #include <moodycamel/concurrentqueue.h>
-#include <span>
-#include <string_view>
 
 class InBoundQueue {
 public:

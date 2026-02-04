@@ -4,15 +4,16 @@
 
 #ifndef FOOTBALL_SERVER_GAMESERVER_H
 #define FOOTBALL_SERVER_GAMESERVER_H
-#include "IPublisher.h"
-#include "InBoundQueue.h"
+#include "EgressStats.h"
 
 #include <concurrentqueue/moodycamel/concurrentqueue.h>
+#include <football/Match.h>
+#include <football_server/IPublisher.h>
+#include <football_server/InBoundQueue.h>
+#include <football_server/OutBoundQueue.h>
+#include <football_server/UwsHub.h>
 #include <memory>
 #include <unordered_map>
-
-#include <football/Match.h>
-#include <football_server/UwsHub.h>
 
 #ifdef FOOTBALL_TESTING
 #include <chrono>
@@ -43,9 +44,12 @@ struct TickAgg {
 class GameServer {
 public:
   GameServer(InBoundQueue &q, UwsHub &h, IPublisher &pub)
-      : running(false), tickRate(1), inboundQ(q), hub(h), pub_(pub) {}
+      : running(false), tickRate(1), inboundQ(q), hub(h),
+        pub_(pub) {}
 
   void start();
+
+  EgressStats &egress_stats() { return egressStats; }
 
 #ifdef FOOTBALL_TESTING
   void addMatch(uint32_t matchId) {
@@ -70,11 +74,14 @@ private:
   bool running;
   int tickRate;
   InBoundQueue &inboundQ;
+  OutBoundQueue outboundQ;
   IPublisher &pub_;
   UwsHub &hub;
   std::unordered_map<uint32_t, std::unique_ptr<Match>> matches;
   std::unordered_map<uint32_t, uint32_t> playerToMatch;
+  EgressStats egressStats;
 
+private:
   void seedDemo();
 
   vector<InBoundMsg> drainInboundMessages(size_t limit) const;

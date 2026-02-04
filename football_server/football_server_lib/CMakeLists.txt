@@ -1,6 +1,11 @@
 add_library(football_server_lib
         include/football_server/Messages.h
-        include/football_server/IPublisher.h)
+        include/football_server/IPublisher.h
+        include/football_server/OutBoundQueue.h
+        include/football_server/EgressStats.h
+        src/RedisWriter.cpp
+        include/football_server/RedisWriter.h
+)
 
 target_sources(football_server_lib PRIVATE
         src/InBoundQueue.cpp

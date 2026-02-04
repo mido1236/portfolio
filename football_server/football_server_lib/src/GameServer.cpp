@@ -74,8 +74,12 @@ void GameServer::process_game_tick(
 
   for (const auto &m : matches | std::views::values) {
     m->update();
-    json j = m->makeSnapshot();
+    auto snapshot = m->makeSnapshot();
+    json j = snapshot;
     pub_.publishText(matchTopic(m->getId()), j.dump());
+    if (!outboundQ.push(snapshot)) {
+      egressStats.drop_queue_full.fetch_add(1, std::memory_order_relaxed);
+    }
     agg.snapshotsPublished++;
   }
 
