@@ -194,8 +194,12 @@ void GameServer::start() {
   hub.start(9001);
 
   running = true;
+  if (redisWriter)
+    redisWriter->start();
   gameLoop(500);
   running = false;
+  if (redisWriter)
+    redisWriter->stop();
 }
 
 #ifdef FOOTBALL_TESTING

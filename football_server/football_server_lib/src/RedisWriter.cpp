@@ -4,6 +4,7 @@
 
 #include <football/SnapshotJson.h>
 #include <football_server/RedisWriter.h>
+#include <iostream>
 #include <sw/redis++/redis++.h>
 #include <vector>
 
@@ -17,7 +18,14 @@ void RedisWriter::start() {
     return;
 
   // Connect before thread starts so failures are immediate & obvious.
-  redis_ = std::make_unique<sw::redis::Redis>(cfg_.redis_uri);
+  sw::redis::ConnectionOptions opts;
+  opts.host = cfg_.host;
+  opts.port = cfg_.port;
+  opts.password = cfg_.password;
+  opts.tls.enabled = true;
+  opts.tls.sni = opts.host;
+  opts.tls.cacert = "cacert.pem";
+  redis_ = std::make_unique<sw::redis::Redis>(opts);
 
   th_ = std::thread(&RedisWriter::run, this);
 }
@@ -30,7 +38,16 @@ void RedisWriter::stop() {
   redis_.reset();
 }
 
-void RedisWriter::run() {
+std::string RedisWriter::getSnapshotsStreamName(
+    const std::vector<MatchSnapshot>::value_type &s) const {
+  return "match:" + std::to_string(s.matchId) + ":" + cfg_.stream;
+}
+
+std::string RedisWriter::getLatestStreamName(
+    std::vector<MatchSnapshot>::value_type &s) const {
+  return "match:" + std::to_string(s.matchId) + ":latest";
+}
+void RedisWriter::run() const {
   using namespace std::chrono;
 
   std::vector<MatchSnapshot> batch;
@@ -55,15 +72,20 @@ void RedisWriter::run() {
       try {
         // XADD snapshots * matchId <...> tick <...> json <...>
         ::json j = s;
+        // std::cout << "Attempting to redis write:" << std::endl
+        //           << j.dump() << std::endl;
         redis_->xadd<std::pair<std::string, std::string>>(
-            cfg_.stream, "*",
+            getSnapshotsStreamName(s), "*",
             {{"matchId", std::to_string(s.matchId)},
              {"tick", std::to_string(s.tick)},
              {"json", j.dump()}});
 
+        redis_->set(getLatestStreamName(s), j.dump());
+
         stats_.redis_write_ok.fetch_add(1, std::memory_order_relaxed);
-      } catch (const std::exception &) {
+      } catch (const std::exception &e) {
         stats_.redis_write_fail.fetch_add(1, std::memory_order_relaxed);
+        std::cout << e.what() << std::endl;
         // Option: backoff or retry; for now just continue (portfolio-friendly
         // simplicity).
       }

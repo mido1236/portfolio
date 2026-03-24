@@ -17,7 +17,9 @@ target_sources(football_server_lib PRIVATE
 
 target_include_directories(football_server_lib PUBLIC include)
 
-target_link_libraries(football_server_lib PUBLIC football_core unofficial::uwebsockets::uwebsockets concurrentqueue::concurrentqueue)
+target_link_libraries(football_server_lib PUBLIC football_core
+        unofficial::uwebsockets::uwebsockets concurrentqueue::concurrentqueue
+        redis++::redis++)
 
 #get_target_property(UWS_INCLUDES unofficial::uwebsockets::uwebsockets INTERFACE_INCLUDE_DIRECTORIES)
 #if (UWS_INCLUDES)

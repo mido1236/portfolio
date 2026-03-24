@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(concurrentqueue REQUIRED)
+find_package(hiredis REQUIRED)
+find_package(redis++ CONFIG REQUIRED)
 find_package(unofficial-uwebsockets CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 

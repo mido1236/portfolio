@@ -5,7 +5,6 @@
 #ifndef FOOTBALL_SERVER_LIB_EGRESSSTATS_H
 #define FOOTBALL_SERVER_LIB_EGRESSSTATS_H
 
-#pragma once
 #include <atomic>
 #include <cstdint>
 

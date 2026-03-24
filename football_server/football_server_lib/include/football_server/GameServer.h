@@ -5,6 +5,7 @@
 #ifndef FOOTBALL_SERVER_GAMESERVER_H
 #define FOOTBALL_SERVER_GAMESERVER_H
 #include "EgressStats.h"
+#include "RedisWriter.h"
 
 #include <concurrentqueue/moodycamel/concurrentqueue.h>
 #include <football/Match.h>
@@ -43,9 +44,10 @@ struct TickAgg {
 
 class GameServer {
 public:
-  GameServer(InBoundQueue &q, UwsHub &h, IPublisher &pub)
-      : running(false), tickRate(1), inboundQ(q), hub(h),
-        pub_(pub) {}
+  GameServer(InBoundQueue &q, UwsHub &h, IPublisher &pub, OutBoundQueue &oq,
+             RedisWriter *redisWriter = nullptr)
+      : running(false), tickRate(1), inboundQ(q), outboundQ(oq), hub(h),
+        pub_(pub), redisWriter(redisWriter) {}
 
   void start();
 
@@ -74,14 +76,14 @@ private:
   bool running;
   int tickRate;
   InBoundQueue &inboundQ;
-  OutBoundQueue outboundQ;
+  OutBoundQueue &outboundQ;
   IPublisher &pub_;
   UwsHub &hub;
   std::unordered_map<uint32_t, std::unique_ptr<Match>> matches;
   std::unordered_map<uint32_t, uint32_t> playerToMatch;
   EgressStats egressStats;
+  RedisWriter *redisWriter = nullptr;
 
-private:
   void seedDemo();
 
   vector<InBoundMsg> drainInboundMessages(size_t limit) const;
