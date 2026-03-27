@@ -7,8 +7,9 @@
 
 TEST(Disconnect, PlayerDisconnectsGracefully) {
   InBoundQueue queue({.capacity = 100, .reserved_for_disconnect = 10});
+  OutBoundQueue outQueue({.capacity = 100});
   UwsHub hub(queue);
-  GameServer server(queue, hub, hub);
+  GameServer server(queue, hub, hub, outQueue);
 
   server.addMatch(1);
   auto match = server.getMatch(1)->get();
@@ -30,9 +31,10 @@ TEST(Disconnect, PlayerDisconnectsGracefully) {
 
 TEST(Disconnect, PlayerLeavesMatchButStaysConnected) {
   InBoundQueue queue({.capacity = 100, .reserved_for_disconnect = 10});
+  OutBoundQueue outQueue({.capacity = 100});
   UwsHub hub(queue);
   CapturingPublisher pub;
-  GameServer server(queue, hub, pub);
+  GameServer server(queue, hub, pub, outQueue);
 
   server.addMatch(1);
   auto match = server.getMatch(1)->get();
