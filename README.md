@@ -23,15 +23,6 @@ Concepts utilized in making the prototype:
 - Physics handlers
 - Light sources
 
-### 🎮 [ECS Game Framework (C++ / SDL3)](ECS/README.md)
-> A modular **Entity-Component-System** framework written in modern **C++20**, currently evolving toward a fully data-driven design.
-
-Key features:
-- Core ECS with component storage and entity signatures
-- Systems for movement, rendering, AI, and events
-- Integration with **SDL3** for rendering and input
-- JSON-based **data-driven entity loading**
-- Designed for gameplay extensibility and experimentation
 
 ---
 
@@ -44,6 +35,18 @@ Key features:
 - Parsing of binary data for client inputs
 - Utilizing Google Test framework for unit tests
 - Redis stream output of match snapshots
+
+---
+
+### 🎮 [ECS Game Framework (C++ / SDL3)](ECS/README.md)
+> A modular **Entity-Component-System** framework written in modern **C++20**, currently evolving toward a fully data-driven design.
+
+Key features:
+- Core ECS with component storage and entity signatures
+- Systems for movement, rendering, AI, and events
+- Integration with **SDL3** for rendering and input
+- JSON-based **data-driven entity loading**
+- Designed for gameplay extensibility and experimentation
 
 ---
 
