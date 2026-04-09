@@ -19,7 +19,6 @@ class Redis;
 class RedisWriter {
 public:
   struct Config {
-    std::string redis_uri = "tcp://redis:6379";
     std::string host = "";
     int port = 0;
     std::string password = "";
@@ -35,12 +34,12 @@ public:
 
   void start();
   void stop();
-  std::string getSnapshotsStreamName(const std::vector<MatchSnapshot>::value_type &s) const;
-  std::string
-  getLatestStreamName(std::vector<MatchSnapshot>::value_type &s) const;
+  std::string getSnapshotsStreamName(const MatchSnapshot &s) const;
+  static std::string getLatestStreamName(const MatchSnapshot &s);
+  bool process_batch(std::vector<MatchSnapshot> &batch, bool sleep_if_empty);
 
 private:
-  void run() const;
+  void run();
 
   OutBoundQueue &q_;
   EgressStats &stats_;

@@ -4,6 +4,8 @@
 
 #include <cmath>
 #include <football/Match.h>
+#include <iostream>
+#include <ostream>
 
 Match::Match(const int matchId)
     : matchId(matchId), currentTick(0), maxSpeed(8.0f), pitchMinX(0.0f),
